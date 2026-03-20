@@ -30,6 +30,8 @@ import React, {
 import { AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Keychain from 'react-native-keychain';
+import { checkAndSendOccasionGreetings } from '../services/occasionGreetings';
+import type { Language } from '../constants/strings';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -215,6 +217,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     lastActiveAtRef.current = Date.now();
     setPendingLockReason(null);
     setIsAuthenticated(true);
+
+    // Check for occasion greetings on unlock (app launch or foreground return)
+    try {
+      const lang = await AsyncStorage.getItem('language');
+      const language: Language = (lang === 'ar') ? 'ar' : 'en';
+      await checkAndSendOccasionGreetings(language);
+    } catch (error) {
+      console.error('[AuthContext] Failed to check occasion greetings:', error);
+    }
   }, []);
 
   const lock = useCallback(() => {

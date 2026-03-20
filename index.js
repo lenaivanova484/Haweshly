@@ -19,13 +19,18 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 // Must be registered before AppRegistry.registerComponent.
 import BackgroundFetch from 'react-native-background-fetch';
 import { runSmsBgCheck } from './src/tasks/smsBackgroundTask';
+import { runOccasionBgCheck } from './src/tasks/occasionBackgroundTask';
 
 const smsHeadlessTask = async (event) => {
   const taskId = event?.taskId ?? 'com.transistorsoft.fetch';
   try {
-    await runSmsBgCheck();
+    // Run both SMS check and occasion check in parallel
+    await Promise.all([
+      runSmsBgCheck(),
+      runOccasionBgCheck(),
+    ]);
   } catch (e) {
-    console.warn('[Haweshly BG] SMS check error:', e);
+    console.warn('[Haweshly BG] Background task error:', e);
   } finally {
     BackgroundFetch.finish(taskId);
   }
@@ -38,7 +43,11 @@ BackgroundFetch.registerHeadlessTask(smsHeadlessTask);
 // while the app is completely killed.
 AppRegistry.registerHeadlessTask('SmsCheckTask', () => async () => {
   try {
-    await runSmsBgCheck();
+    // Run both SMS check and occasion check in parallel
+    await Promise.all([
+      runSmsBgCheck(),
+      runOccasionBgCheck(),
+    ]);
   } catch (e) {
     console.warn('[Haweshly BG] SmsCheckTask error:', e);
   }

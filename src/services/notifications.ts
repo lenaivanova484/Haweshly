@@ -43,7 +43,7 @@ const arMessages = [
 ];
 
 export function getMotivationalMessage(goalName: string, _language: Language): string {
-  const messages = arMessages;
+  const messages = (_language === 'ar') ? arMessages : enMessages;
   const msg = messages[Math.floor(Math.random() * messages.length)];
   return msg.replace('[Goal]', goalName);
 }
@@ -175,14 +175,27 @@ export async function checkAndFireMilestones(
     sound: 'reminder_sound',
   });
 
+  const lang = await AsyncStorage.getItem('language');
+  const language: Language = (lang === 'ar') ? 'ar' : 'en';
+
   const isComplete = highest === 100;
   await notifee.displayNotification({
-    title: isComplete
+    title: isComplete && language === 'en'
       ? `🎉 Goal Complete - ${goalName}`
-      : `🏆 ${highest}% Reached - ${goalName}`,
-    body: isComplete
+      : !isComplete && language === 'en'
+      ? `🏆 ${highest}% Reached - ${goalName}`
+      : isComplete && language === 'ar'
+      ? `🎉 تم تحقيق الهدف - ${goalName}`
+      : `🏆 وصلت لـ ${highest}% - ${goalName}`,
+
+    body: isComplete && language === 'en'
       ? `Congratulations! You've fully funded your "${goalName}" goal!`
-      : `You're ${highest}% of the way to your "${goalName}" goal. Keep it up!`,
+      : !isComplete && language === 'en'
+      ? `You're ${highest}% of the way to your "${goalName}" goal. Keep it up!`
+      : isComplete && language === 'ar'
+      ? `تهانينا! لقد تم تمويل هدف "${goalName}" بالكامل!`
+      : `أنت وصلت لـ ${highest}% من هدف "${goalName}". استمر!`,
+
     android: {
       channelId: MILESTONE_CHANNEL_ID,
       pressAction: { id: 'default' },

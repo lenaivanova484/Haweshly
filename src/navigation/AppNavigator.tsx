@@ -47,6 +47,42 @@ function TabNavigator() {
     }, []),
   );
 
+  const tabs = [
+    {
+      name: 'Dashboard',
+      component: DashboardScreen,
+      title: t.dashboard,
+      icon: 'faHouse',
+    },
+    {
+      name: 'Goals',
+      component: GoalsScreen,
+      title: t.goals,
+      icon: 'faBullseye',
+    },
+    {
+      name: 'Analytics',
+      component: AnalyticsScreen,
+      title: t.analytics,
+      icon: 'faChartLine',
+    },
+    {
+      name: 'Transactions',
+      component: SmsTransactionsScreen,
+      title: isRTL ? 'رسائل SMS' : 'SMS',
+      icon: 'faEnvelope',
+    },
+    {
+      name: 'Settings',
+      component: SettingsScreen,
+      title: t.settings,
+      icon: 'faCog',
+    },
+  ];
+
+  // Reverse tab order for RTL layouts
+  const orderedTabs = isRTL ? [...tabs].reverse() : tabs;
+
   return (
     <>
       <Tab.Navigator
@@ -64,46 +100,23 @@ function TabNavigator() {
           tabBarInactiveTintColor: theme.textMuted,
           tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginTop: 2 },
         }}>
-        <Tab.Screen
-          name="Dashboard"
-          component={DashboardScreen}
-          options={{
-            title: t.dashboard,
-            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faHouse')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
-          }}
-        />
-        <Tab.Screen
-          name="Goals"
-          component={GoalsScreen}
-          options={{
-            title: t.goals,
-            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faBullseye')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
-          }}
-        />
-        <Tab.Screen
-          name="Analytics"
-          component={AnalyticsScreen}
-          options={{
-            title: t.analytics,
-            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faChartLine')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
-          }}
-        />
-        <Tab.Screen
-          name="Transactions"
-          component={SmsTransactionsScreen}
-          options={{
-            title: isRTL ? 'رسائل SMS' : 'SMS',
-            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faEnvelope')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
-          }}
-        />
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            title: t.settings,
-            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faCog')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
-          }}
-        />
+        {orderedTabs.map(tab => (
+          <Tab.Screen
+            key={tab.name}
+            name={tab.name}
+            component={tab.component}
+            options={{
+              title: tab.title,
+              tabBarIcon: ({ focused }) => (
+                <FontAwesomeIcon
+                  icon={resolveIcon(tab.icon)}
+                  size={focused ? 22 : 20}
+                  color={focused ? COLORS.accent : theme.textMuted}
+                />
+              ),
+            }}
+          />
+        ))}
       </Tab.Navigator>
 
       <ConfirmModal
