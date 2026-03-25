@@ -1,8 +1,8 @@
 import { generatePDF } from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
-import { AnalyticsReportData, GoalProgressReportData } from './types';
+import { AnalyticsReportData, GoalProgressReportData, GoalReportRow } from './types';
 import { APP_ICON_BASE64 } from './appIconBase64';
-import { strings } from '../../constants/strings';
+import { CATEGORIES, strings } from '../../constants/strings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -58,6 +58,15 @@ const BASE_STYLES = `
 
 // ─── Analytics Full Report PDF ───────────────────────────────────────────────
 
+function getGoalCategory(goal: GoalReportRow): string {
+  for (const cat of CATEGORIES) {
+    if (cat.icons.includes(goal.icon)) {
+      return cat.label;
+    }
+  }
+  return 'Other';
+}
+
 function buildAnalyticsHtml(data: AnalyticsReportData): string {
   const goalRows = data.goals
     .map(g => {
@@ -66,6 +75,7 @@ function buildAnalyticsHtml(data: AnalyticsReportData): string {
       return `
         <tr>
           <td>${g.name}</td>
+          <td>${getGoalCategory(g)}</td>
           <td>${fmt(g.targetAmount, g.currency)}</td>
           <td class="${g.saved >= 0 ? 'stat-value green' : 'stat-value red'}">${fmt(g.saved, g.currency)}</td>
           <td>
@@ -101,7 +111,7 @@ function buildAnalyticsHtml(data: AnalyticsReportData): string {
 
       <h2>Goal Breakdown</h2>
       <table>
-        <thead><tr><th>Goal</th><th>Target</th><th>Saved</th><th>Progress</th><th>%</th></tr></thead>
+        <thead><tr><th>Goal</th><th>Category</th><th>Target</th><th>Saved</th><th>Progress</th><th>%</th></tr></thead>
         <tbody>${goalRows}</tbody>
       </table>
 

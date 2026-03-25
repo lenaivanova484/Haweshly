@@ -176,7 +176,16 @@ import {
   faUserGraduate,
   faUserGear,
   faUserDoctor,
-  faBolt
+  faBolt,
+  faSeedling,
+  faMosque,
+  faPeopleCarry,
+  faHandHoldingDollar,
+  faHandHoldingHeart,
+  faHandsHelping,
+  faShoePrints,
+  faHatCowboy,
+  faGlasses
 } from '@fortawesome/free-solid-svg-icons';
 
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -370,6 +379,15 @@ export const ICON_MAP: Record<string, IconDefinition> = {
   faUserGear,
   faUserDoctor,
   faBolt,
+  faHandHoldingHeart,
+  faHandHoldingDollar,
+  faHandsHelping,
+  faPeopleCarry,
+  faMosque,
+  faSeedling,
+  faGlasses,
+  faHatCowboy,
+  faShoePrints,
 
   faSpotify,
   faYoutube,

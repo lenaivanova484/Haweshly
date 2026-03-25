@@ -1,7 +1,7 @@
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
-import { AnalyticsReportData, GoalSavingsHistoryReportData } from './types';
-import { strings } from '../../constants/strings';
+import { AnalyticsReportData, GoalReportRow, GoalSavingsHistoryReportData } from './types';
+import { CATEGORIES, strings } from '../../constants/strings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -41,10 +41,20 @@ async function writeAndShare(csv: string, fileName: string, title: string): Prom
 
 // ─── Analytics CSV Export ─────────────────────────────────────────────────────
 
+function getGoalCategory(goal: GoalReportRow): string {
+  for (const cat of CATEGORIES) {
+    if (cat.icons.includes(goal.icon)) {
+      return cat.label;
+    }
+  }
+  return 'Other';
+}
+
 export async function exportAnalyticsCsv(data: AnalyticsReportData): Promise<void> {
-  const headers = ['Goal Name', 'Target Amount', 'Saved Amount', 'Progress %', 'Deadline'];
+  const headers = ['Goal Name', 'Category', 'Target Amount', 'Saved Amount', 'Progress %', 'Deadline'];
   const rows = data.goals.map(g => [
     g.name,
+    getGoalCategory(g),
     fmt(g.targetAmount, g.currency),
     fmt(g.saved, g.currency),
     `${Math.round(g.progress)}%`,

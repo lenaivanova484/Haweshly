@@ -290,6 +290,22 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   {
+    label: 'Accessories',
+    categoryIcon: 'faGlasses',
+    icons: [
+      'faGlasses',
+      'faClock',
+      'faRing',
+      'faGem',
+      'faBagShopping',
+      'faFaceSmile',
+      'faHatCowboy',
+      'faShirt',
+      'faShoePrints',
+      'faStar'
+    ],
+  },
+  {
     label: 'Bills',
     categoryIcon: 'faReceipt',
     icons: ['faLightbulb', 'faDroplet', 'faFire', 'faMobile', 'faGlobe', 'faHouse', 'faReceipt', 'faCreditCard', 'faEnvelope', 'faFile'],
@@ -298,6 +314,22 @@ export const CATEGORIES: Category[] = [
     label: 'Debts',
     categoryIcon: 'faMoneyBillTransfer',
     icons: ['faMoneyBillTransfer', 'faArrowTrendDown', 'faReceipt', 'faCreditCard', 'faBuilding', 'faCalendar', 'faTriangleExclamation', 'faFile', 'faArrowsRotate', 'faMoneyBillWave'],
+  },
+  {
+    label: 'Donations',
+    categoryIcon: 'faHandHoldingHeart',
+    icons: [
+      'faHandHoldingHeart',
+      'faHeart',
+      'faHandHoldingDollar',
+      'faHandsHelping',
+      'faPeopleCarry',
+      'faMosque',
+      'faChurch',
+      'faSeedling',
+      'faGift',
+      'faCoins'
+    ],
   },
   {
     label: 'Education',

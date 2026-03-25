@@ -1,8 +1,8 @@
 import XLSX from 'xlsx';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
-import { AnalyticsReportData, GoalSavingsHistoryReportData } from './types';
-import { strings } from '../../constants/strings';
+import { AnalyticsReportData, GoalReportRow, GoalSavingsHistoryReportData } from './types';
+import { CATEGORIES, strings } from '../../constants/strings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -26,6 +26,15 @@ async function writeAndShare(wb: XLSX.WorkBook, fileName: string, title: string)
 }
 
 // ─── Analytics Excel Export ──────────────────────────────────────────────────
+
+function getGoalCategory(goal: GoalReportRow): string {
+  for (const cat of CATEGORIES) {
+    if (cat.icons.includes(goal.icon)) {
+      return cat.label;
+    }
+  }
+  return 'Other';
+}
 
 export async function exportAnalyticsExcel(data: AnalyticsReportData): Promise<void> {
   const wb = XLSX.utils.book_new();
@@ -51,9 +60,10 @@ export async function exportAnalyticsExcel(data: AnalyticsReportData): Promise<v
   XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
 
   // Sheet 2 – Goal Breakdown
-  const goalHeader = ['Goal Name', 'Target Amount', 'Saved Amount', 'Progress %', 'Deadline'];
+  const goalHeader = ['Goal Name', 'Category', 'Target Amount', 'Saved Amount', 'Progress %', 'Deadline'];
   const goalRows = data.goals.map(g => [
     g.name,
+    getGoalCategory(g),
     fmt(g.targetAmount, g.currency),
     fmt(g.saved, g.currency),
     `${Math.round(g.progress)}%`,

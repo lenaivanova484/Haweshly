@@ -7,6 +7,7 @@ export interface GoalReportRow {
   progress: number; // 0–100
   deadline: string;
   currency: string;
+  icon: string;
 }
 
 export interface SavingsEntryRow {

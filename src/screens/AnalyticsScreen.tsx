@@ -80,6 +80,7 @@ export default function AnalyticsScreen() {
       progress: s.progress,
       deadline: (s.goal as any).deadline ?? '',
       currency: t.currency,
+      icon: (s.goal as any).icon || 'faBullseye',
     })),
   }), [totalSavedAll, totalDeposits, totalWithdrawals, depositCount, avgPerEntry, favoriteCount, t.currency, goalStats]);
 
