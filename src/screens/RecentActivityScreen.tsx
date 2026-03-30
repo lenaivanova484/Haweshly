@@ -2,7 +2,6 @@ import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
-  TextInput,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -21,6 +20,7 @@ import IconButton from '../components/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
+import { DatePickerInput } from '../components/DatePickerInput';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -171,54 +171,34 @@ export default function RecentActivityScreen({ navigation }: any) {
 
           {/* From / To date inputs */}
           <View style={[styles.dateRow, isRTL && styles.rtl]}>
-            <View style={styles.dateField}>
-              <Text style={[styles.dateLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.fromDate}</Text>
-              <View
-                style={[
-                  styles.dateInput,
-                  {
-                    backgroundColor: theme.inputBg,
-                    borderColor: fromError ? COLORS.danger : theme.cardBorder,
-                  },
-                ]}
-              >
-                <TextInput
-                  style={[styles.dateInputTxt, { color: theme.text }]}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={theme.textMuted}
-                  value={fromDate}
-                  onChangeText={v => { setFromDate(v); setFromError(''); }}
-                  textAlign={isRTL ? 'right' : 'left'}
-                />
-              </View>
-              {!!fromError && <Text style={styles.errorTxt}>{fromError}</Text>}
+            <View style={[styles.dateField, { flex: 1 }]}>
+              <DatePickerInput
+                label={t.fromDate}
+                value={fromDate}
+                onChange={(newDate) => {
+                  setFromDate(newDate);
+                  setFromError('');
+                }}
+                error={fromError}
+                textAlign={isRTL ? 'right' : 'left'}
+              />
             </View>
 
             <View style={styles.dateSep}>
               <FontAwesomeIcon icon={isRTL ? resolveIcon('faArrowLeft') : resolveIcon('faArrowRight')} size={12} color={theme.textMuted} />
             </View>
 
-            <View style={styles.dateField}>
-              <Text style={[styles.dateLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.toDate}</Text>
-              <View
-                style={[
-                  styles.dateInput,
-                  {
-                    backgroundColor: theme.inputBg,
-                    borderColor: toError ? COLORS.danger : theme.cardBorder,
-                  },
-                ]}
-              >
-                <TextInput
-                  style={[styles.dateInputTxt, { color: theme.text }]}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={theme.textMuted}
-                  value={toDate}
-                  onChangeText={v => { setToDate(v); setToError(''); }}
-                  textAlign={isRTL ? 'right' : 'left'}
-                />
-              </View>
-              {!!toError && <Text style={styles.errorTxt}>{toError}</Text>}
+            <View style={[styles.dateField, { flex: 1 }]}>
+              <DatePickerInput
+                label={t.toDate}
+                value={toDate}
+                onChange={(newDate) => {
+                  setToDate(newDate);
+                  setToError('');
+                }}
+                error={toError}
+                textAlign={isRTL ? 'right' : 'left'}
+              />
             </View>
           </View>
 
@@ -326,7 +306,7 @@ export default function RecentActivityScreen({ navigation }: any) {
               return (
                 <TouchableOpacity
                   key={entry.id}
-                  onPress={() => navigation.navigate('GoalDetail', { goalId: entry.goalId })}
+                  onPress={() => navigation.navigate('GoalDetail' as any, { goalId: entry.goalId })}
                   activeOpacity={0.75}
                   style={[
                     styles.row,
@@ -382,7 +362,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
-    gap: SPACING.sm,
+    gap: SPACING.md,
   },
   headerTitle: {
     flex: 1,
@@ -417,7 +397,7 @@ const styles = StyleSheet.create({
   dateRow:  { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   dateField: { flex: 1 },
   dateLabel: { fontSize: FONT_SIZE.xs, marginBottom: 4, fontWeight: '600' },
-  dateSep:  { paddingTop: 22, alignItems: 'center' },
+  dateSep:  { alignItems: 'center' },
   dateInput: {
     borderWidth: 1.5,
     borderRadius: RADIUS.md,

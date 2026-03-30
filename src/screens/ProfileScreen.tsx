@@ -99,6 +99,7 @@ export default function ProfileScreen({ navigation }: any) {
     try {
       await saveProfile({ ...profile, name: profile.name.trim(), phone: profile.phone.trim() });
       setHasChanges(false);
+      navigation.goBack();
     } finally {
       setIsSaving(false);
     }
@@ -110,7 +111,7 @@ export default function ProfileScreen({ navigation }: any) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.cardBorder }]}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomColor: theme.cardBorder }]}>
         <IconButton
           icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
           onPress={() => navigation.goBack()}
@@ -236,7 +237,6 @@ export default function ProfileScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: StatusBar.currentHeight },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,

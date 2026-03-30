@@ -163,7 +163,7 @@ export default function AchievementsScreen({ navigation }: any) {
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.cardBorder }]}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomColor: theme.cardBorder }]}>
         <IconButton
           icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
           onPress={() => navigation.goBack()}
@@ -287,7 +287,6 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
   },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,

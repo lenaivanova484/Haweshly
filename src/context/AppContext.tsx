@@ -10,6 +10,7 @@ import { I18nManager } from 'react-native';
 import { Goal, ThemeMode, Language, ReminderSettings } from '../constants/types';
 import { COLORS } from '../constants/theme';
 import { translations } from '../constants/translations';
+import { preloadSVGs } from '../constants/subcategoryIcons';
 
 const STORAGE_KEYS = {
   GOALS: '@haweshly_goals',
@@ -58,6 +59,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     loadData();
+    preloadSVGs();
   }, []);
 
   const loadData = async () => {

@@ -2,13 +2,14 @@
  * Haweshly - Financial Goals & Savings Tracker
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Modal, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { LanguageProvider, useLanguage } from './src/contexts/LanguageContext';
 import { GoalsProvider } from './src/contexts/GoalsContext';
 import { BadgesProvider } from './src/contexts/BadgesContext';
 import { SmsProvider } from './src/contexts/SmsContext';
+import { ExpensesProvider } from './src/contexts/ExpensesContext';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import LockScreen from './src/components/LockScreen';
@@ -134,7 +135,10 @@ export default function App() {
             <BadgesProvider>
               {/* SmsProvider must be inside GoalsProvider (uses useGoals) */}
               <SmsProvider>
-                <AuthGate />
+                {/* ExpensesProvider for expense tracking */}
+                <ExpensesProvider>
+                  <AuthGate />
+                </ExpensesProvider>
               </SmsProvider>
             </BadgesProvider>
           </GoalsProvider>

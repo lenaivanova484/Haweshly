@@ -23,12 +23,19 @@ export default function GoalsScreen({ navigation }: any) {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
   const { goals, entries, toggleFavorite, reload } = useGoals();
+  const categoryScrollRef = React.useRef<ScrollView>(null);
 
   const { refreshProps } = usePullToRefresh(
     useCallback(async () => { await reload(); }, [reload]),
     COLORS.accent,
     theme.card,
   );
+
+  React.useEffect(() => {
+    if (isRTL && categoryScrollRef.current) {
+      setTimeout(() => categoryScrollRef.current?.scrollToEnd({ animated: false }), 100);
+    }
+  }, [isRTL]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterVisible, setFilterVisible] = useState(false);
@@ -227,7 +234,7 @@ export default function GoalsScreen({ navigation }: any) {
           </View>
 
           {/* Status Filter */}
-          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>{t.statusFilter}</Text>
+          <Text style={[styles.sectionLabel, { textAlign: isRTL ? 'right' : 'left', color: theme.textSecondary }]}>{t.statusFilter}</Text>
           <View style={[styles.optionRow, isRTL && styles.rtl]}>
             {statusOptions.map(opt => (
               <TouchableOpacity
@@ -249,8 +256,9 @@ export default function GoalsScreen({ navigation }: any) {
           </View>
 
           {/* Category Filter */}
-          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>Category</Text>
+          <Text style={[styles.sectionLabel, { textAlign: isRTL ? 'right' : 'left', color: theme.textSecondary }]}>{t.category}</Text>
           <ScrollView
+            ref={categoryScrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryScroll}
@@ -290,7 +298,7 @@ export default function GoalsScreen({ navigation }: any) {
           </ScrollView>
 
           {/* Sort By */}
-          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>{t.sortBy}</Text>
+          <Text style={[styles.sectionLabel, { textAlign: isRTL ? 'right' : 'left', color: theme.textSecondary }]}>{t.sortBy}</Text>
           <View style={styles.sortList}>
             {sortOptions.map(opt => (
               <Pressable

@@ -11,6 +11,7 @@ import Button from '../components/Button';
 import IconButton from '../components/IconButton';
 import ConfirmModal from '../components/ConfirmModal';
 import ExportBottomSheet, { ExportOption } from '../components/ExportBottomSheet';
+import { DatePickerInput } from '../components/DatePickerInput';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faFilePdf, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { resolveIcon } from '../constants/icons';
@@ -215,7 +216,7 @@ export default function GoalDetailScreen({ navigation, route }: any) {
           backgroundColor={theme.card}
         />
         <View style={[styles.headerCenter, isRTL && styles.rtl]}>
-          <Text style={[styles.goalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.name}</Text>
+          <Text style={[styles.goalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left', marginLeft: isRTL ? 0 : SPACING.md, marginRight: isRTL ? SPACING.md : 0 }]} numberOfLines={1}>{goal.name}</Text>
         </View>
         <View style={[styles.headerActions, isRTL && styles.rtl]}>
           <IconButton
@@ -400,33 +401,15 @@ export default function GoalDetailScreen({ navigation, route }: any) {
 
             {/* Date */}
             <View style={styles.inputGroup}>
-              <View style={[styles.labelRow, {flexDirection: isRTL ? 'row-reverse' : 'row'}]}>
-                <Text style={[styles.inputLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.date}</Text>
-                <Text style={styles.requiredStar }> * </Text>
-              </View>
-              <View style={[styles.inputRow, {
-                backgroundColor: theme.inputBg,
-                borderColor: entryErrors.date && entryTouched.date ? COLORS.danger : theme.cardBorder,
-                borderWidth: entryErrors.date && entryTouched.date ? 2 : 1.5,
-              }]}>
-                <RNTextInput
-                  style={[styles.sheetInput, { color: theme.text }]}
-                  value={date}
-                  onChangeText={v => handleEntryChange('date', v)}
-                  onBlur={() => handleEntryBlur('date')}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={theme.textMuted}
-                  textAlign={isRTL ? 'right' : 'left'}
-                />
-              </View>
-              {entryErrors.date && entryTouched.date ? (
-                <View style={[styles.errorRow, isRTL && styles.rtl]}>
-                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={12} color={COLORS.danger} />
-                  <Text style={styles.errorText}>{entryErrors.date}</Text>
-                </View>
-              ) : (
-                <Text style={[styles.inputHint, { color: theme.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>Format: YYYY-MM-DD</Text>
-              )}
+              <DatePickerInput
+                label={t.date}
+                value={date}
+                onChange={v => handleEntryChange('date', v)}
+                onBlur={() => handleEntryBlur('date')}
+                error={entryErrors.date && entryTouched.date ? entryErrors.date : undefined}
+                textAlign={isRTL ? 'right' : 'left'}
+                required
+              />
             </View>
 
             <View style={[styles.sheetActions, isRTL && styles.rtl]}>
@@ -472,7 +455,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, paddingBottom: SPACING.md },
   rtl: { flexDirection: 'row-reverse' },
   headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  goalName: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: '800', marginHorizontal: SPACING.xs },
+  goalName: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: '800' },
   headerActions: { flexDirection: 'row', gap: SPACING.sm },
   content: { paddingHorizontal: SPACING.lg },
   summaryCard: { marginBottom: SPACING.md },

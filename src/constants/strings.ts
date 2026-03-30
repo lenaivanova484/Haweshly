@@ -1,7 +1,7 @@
 export type Language = 'en' | 'ar';
 
 export const strings = {
-  versionNumber: '1.3.2',
+  versionNumber: '1.4.0',
 
   en: {
     // App
@@ -81,6 +81,7 @@ export const strings = {
     daily: 'Daily',
     weekly: 'Weekly',
     monthly: 'Monthly',
+    yearly: 'Yearly',
     about: 'About',
     version: 'Version',
 
@@ -144,6 +145,38 @@ export const strings = {
     incorrectPIN: 'Incorrect PIN. Try again.',
     sessionExpiredTitle: 'Session Expired',
     sessionExpiredMsg: 'Your session has expired. Please authenticate again to continue.',
+
+    // Expenses Screen
+    expenses: 'Expenses',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+    thisYear: 'This Year',
+    totalExpenses: 'Total Expenses',
+    noExpenses: 'No expenses recorded yet',
+    addExpense: 'Add Expense',
+    editExpense: 'Edit Expense',
+    topCategory: 'Top Category',
+    dailyAverage: 'Daily Average',
+    deleteExpense: 'Delete Expense',
+    confirmDeleteExpense: 'Are you sure you want to delete this expense?',
+
+    // Expenses Analytics Screen
+    spendingOverTime: 'Spending Over Time',
+    spendingByCategory: 'Spending by Category',
+    category: 'Category',
+    total: 'Total',
+    average: 'Average',
+    chart: 'Chart',
+    list: 'List',
+    insights: 'Insights',
+    monthlyOverview: 'Monthly Overview',
+
+    // Add Expense Screen
+    dateAndTime: 'Date & Time',
+    note: 'Note',
+    optional: 'Optional',
   },
 
   ar: {
@@ -218,6 +251,7 @@ export const strings = {
     daily: 'يومياً',
     weekly: 'أسبوعياً',
     monthly: 'شهرياً',
+    yearly: 'سنويًا',
     about: 'حول التطبيق',
     version: 'الإصدار',
 
@@ -279,6 +313,38 @@ export const strings = {
     incorrectPIN: 'رمز PIN غير صحيح. حاول مجدداً.',
     sessionExpiredTitle: 'انتهت الجلسة',
     sessionExpiredMsg: 'انتهت جلستك. يرجى تسجيل الدخول مجدداً للمتابعة.',
+
+    // Expenses Screen
+    expenses: 'المصروفات',
+    today: 'اليوم',
+    yesterday: 'أمس',
+    thisWeek: 'هذا الأسبوع',
+    thisMonth: 'هذا الشهر',
+    thisYear: 'هذا العام',
+    totalExpenses: 'إجمالي المصروفات',
+    noExpenses: 'لا توجد مصروفات مسجلة بعد',
+    addExpense: 'إضافة مصروف',
+    editExpense: 'تعديل المصروف',
+    topCategory: 'أعلى فئة',
+    dailyAverage: 'المتوسط اليومي',
+    deleteExpense: 'حذف المصروف',
+    confirmDeleteExpense: 'هل أنت متأكد من حذف هذا المصروف؟',
+
+    // Expenses Analytics Screen
+    spendingOverTime: 'الإنفاق مع مرور الوقت',
+    total: 'الإجمالي',
+    average: 'المتوسط',
+    spendingByCategory: 'الإنفاق حسب الفئة',
+    category: 'الفئة',
+    chart: 'رسم بياني',
+    list: 'قائمة',
+    insights: 'رؤى',
+    monthlyOverview: 'نظرة شهريّة',
+
+    // Add Expense Screen
+    dateAndTime: 'التاريخ والوقت',
+    note: 'ملاحظة',
+    optional: 'اختياري',
   },
 };
 
@@ -321,14 +387,14 @@ export const CATEGORIES: Category[] = [
     icons: [
       'faHandHoldingHeart',
       'faHeart',
-      'faHandHoldingDollar',
       'faHandsHelping',
+      'faCoins',
       'faPeopleCarry',
+      'faHospital',
       'faMosque',
       'faChurch',
       'faSeedling',
       'faGift',
-      'faCoins'
     ],
   },
   {

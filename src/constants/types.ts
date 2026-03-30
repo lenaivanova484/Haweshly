@@ -98,6 +98,110 @@ export const DEFAULT_WITHDRAWAL_KEYWORDS: string[] = [
   'sent',
 ];
 
+// ─── Expense Types ────────────────────────────────────────────────────────────
+
+export type ExpenseCategory = 'Bills' | 'Entertainment' | 'Food' | 'Transport' | 'Donations' | 'Shopping' | 'Health' | 'Education' | 'Tech' | 'Subscriptions' | 'Insurance' | 'Other';
+
+// Sub-categories for each category
+export type SubscriptionSubCategory = 'bein' | 'Netflix' | 'YouTube' | 'Spotify' | 'Apple Music' | 'Disney+' | 'Amazon Prime' | 'Facebook' | 'Discord' | 'WatchIt' | 'Shahid' | 'Anghami' | 'OSN+' | 'Club Membership' | 'Other Subs';
+export type TransportSubCategory = 'Uber' | 'Careem' | 'InDrive' | 'Didi' | 'Taxi' | 'Motorcycle' | 'Bus' | 'Train' | 'Metro' | 'Flight' | 'Ship' | 'Other Transport';
+export type FoodSubCategory = 'Restaurant' | 'Cafe' | 'Groceries' | 'Snacks' | 'Delivery' | 'Bakery';
+export type EntertainmentSubCategory = 'Movie' | 'Theater' | 'Concert' | 'Gaming' | 'Sports' | 'Music' | 'Show';
+export type DonationsSubCategory = 'Charity' | 'NGO' | 'Gifts' | 'Hospital' | 'Mosque' | 'Church' | 'Other Donations';
+export type ShoppingSubCategory = 'Clothes' | 'Shoes' | 'Accessories' | 'Home' | 'Beauty';
+export type HealthSubCategory = 'Medication' | 'Doctor' | 'Dentist' | 'Gym' | 'Mental Health';
+export type EducationSubCategory = 'Tuition' | 'Books' | 'Course' | 'Training';
+export type TechSubCategory = 'Software' | 'Hardware' | 'Gadgets' | 'Apps';
+export type BillsSubCategory = 'Vodafone' | 'Orange' | 'e&' | 'WE' | 'Electricity' | 'Water' | 'Gas' | 'Internet';
+export type InsuranceSubCategory = 'Medical Insurance' | 'Car Insurance' | 'Life Insurance'  | 'Travel Insurance'  | 'Property Insurance'  | 'Mobile Insurance'  | 'Other Insurance';
+
+export type ExpenseSubCategory = 
+  | SubscriptionSubCategory 
+  | TransportSubCategory 
+  | FoodSubCategory 
+  | EntertainmentSubCategory 
+  | DonationsSubCategory 
+  | ShoppingSubCategory 
+  | HealthSubCategory 
+  | EducationSubCategory 
+  | TechSubCategory
+  | BillsSubCategory
+  | InsuranceSubCategory;
+
+export interface Expense {
+  id: string;
+  amount: number;
+  category: ExpenseCategory;
+  subcategory?: ExpenseSubCategory;
+  note?: string;
+  date: string; // ISO string
+  createdAt: string; // ISO string
+}
+
+export interface ExpenseStats {
+  todayTotal: number;
+  monthTotal: number;
+  categoryTotals: Record<ExpenseCategory, number>;
+  categoryPercentages: Record<ExpenseCategory, number>;
+  highestCategory: ExpenseCategory | null;
+  averageDailySpend: number;
+}
+
+export type ExpenseChartView = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export interface ExpenseChartData {
+  label: string;
+  value: number;
+  date: string; // For reference
+}
+
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = ['Bills', 'Donations', 'Education', 'Entertainment', 'Food', 'Health', 'Insurance', 'Shopping', 'Subscriptions', 'Tech', 'Transport', 'Other'];
+
+export const CATEGORY_ICONS: Record<ExpenseCategory, string> = {
+  Bills: 'faFileInvoiceDollar',
+  Donations: 'faHandHoldingHeart',
+  Education: 'faBook',
+  Entertainment: 'faFilm',
+  Food: 'faUtensils',
+  Health: 'faHeartPulse',
+  Insurance: 'faShieldHalved',
+  Shopping: 'faShoppingBag',
+  Subscriptions: 'faReceipt',
+  Tech: 'faLaptop',
+  Transport: 'faCar',
+  Other: 'faEllipsis',
+};
+
+export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
+  Bills: '#1A73E8',         // Blue
+  Donations: '#E55039',     // Dark Orange-Red
+  Education: '#6C5CE7',     // Purple
+  Entertainment: '#FF9F43', // Orange
+  Food: '#FF6B6B',          // Red
+  Health: '#00B894',        // Green
+  Insurance: '#c94aff',     // Violet
+  Shopping: '#E84393',      // Pink
+  Subscriptions: '#FDCB6E', // Yellow
+  Tech: '#0984E3',          // Bright Blue
+  Transport: '#4ECDC4',     // Teal
+  Other: '#636E72',         // Gray
+};
+
+export const SUBCATEGORIES: Record<ExpenseCategory, ExpenseSubCategory[]> = {
+  Subscriptions: ['bein', 'Netflix', 'YouTube', 'Spotify', 'Apple Music', 'Disney+', 'Amazon Prime', 'Shahid', 'WatchIt', 'Anghami', 'OSN+', 'Facebook', 'Discord', 'Club Membership', 'Other Subs'],
+  Transport: ['Uber', 'Careem', 'InDrive', 'Didi', 'Taxi', 'Motorcycle', 'Bus', 'Train', 'Metro', 'Flight', 'Ship', 'Other Transport'],
+  Food: ['Restaurant', 'Cafe', 'Groceries', 'Snacks', 'Delivery', 'Bakery'],
+  Entertainment: ['Movie', 'Theater', 'Concert', 'Gaming', 'Sports', 'Music', 'Show'],
+  Donations: ['Charity', 'NGO', 'Gifts', 'Hospital', 'Mosque', 'Church', 'Other Donations'],
+  Shopping: ['Clothes', 'Shoes', 'Accessories', 'Home', 'Beauty'],
+  Health: ['Medication', 'Doctor', 'Dentist', 'Gym', 'Mental Health'],
+  Education: ['Tuition', 'Books', 'Course', 'Training'],
+  Tech: ['Software', 'Hardware', 'Gadgets', 'Apps'],
+  Bills: ['Vodafone', 'Orange', 'e&', 'WE', 'Electricity', 'Water', 'Gas', 'Internet'],
+  Insurance: ['Medical Insurance', 'Car Insurance', 'Life Insurance', 'Travel Insurance', 'Property Insurance', 'Mobile Insurance', 'Other Insurance'],
+  Other: [],
+};
+
 export const DEFAULT_ALLOCATION_PRIORITY: AllocationPriority = 'lowest_target_first';
 
 // ─── SMS Poll Interval ───────────────────────────────────────────────────────
@@ -128,32 +232,62 @@ export const POLL_INTERVAL_OPTIONS: Array<{ value: PollInterval; label: string }
 
 export const ALLOCATION_PRIORITY_OPTIONS: Array<{
   key: AllocationPriority;
-  label: string;
-  description: string;
+  label: Record<string, string>;
+  description: Record<string, string>;
 }> = [
   {
     key: 'lowest_target_first',
-    label: 'Lowest Target First',
-    description: 'Fill the smallest goal before moving on',
+    label: {
+      en: 'Lowest Target First',
+      ar: 'الأهداف الأصغر أولاً',
+    },
+    description: {
+      en: 'Fill the smallest goal before moving on',
+      ar: 'املأ الأهداف الأصغر قبل الانتقال إلى الأخرى',
+    },
   },
   {
     key: 'highest_target_first',
-    label: 'Highest Target First',
-    description: 'Fill the largest goal before moving on',
+    label: {
+      en: 'Highest Target First',
+      ar: 'الأهداف الأكبر أولاً',
+    },
+    description: {
+      en: 'Fill the largest goal before moving on',
+      ar: 'املأ الأهداف الأكبر قبل الانتقال إلى الأخرى',
+    },
   },
   {
     key: 'oldest_goal_first',
-    label: 'Oldest Goal First',
-    description: 'Allocate to the earliest created goal',
+    label: {
+      en: 'Oldest Goal First',
+      ar: 'الأهداف الأقدم أولاً',
+    },
+    description: {
+      en: 'Allocate to the earliest created goal',
+      ar: 'املأ الأهداف الأقدم أولاً',
+    },
   },
   {
     key: 'newest_goal_first',
-    label: 'Newest Goal First',
-    description: 'Allocate to the most recently created goal',
+    label: {
+      en: 'Newest Goal First',
+      ar: 'الأهداف الأحدث أولاً',
+    },
+    description: {
+      en: 'Allocate to the most recently created goal',
+      ar: 'املأ الأهداف الأحدث أولاً',
+    },
   },
   {
     key: 'nearest_deadline_first',
-    label: 'Nearest Deadline First',
-    description: 'Allocate to the goal with the closest deadline',
+    label: {
+      en: 'Nearest Deadline First',
+      ar: 'الأهداف الأقرب للنهاية أولاً',
+    },
+    description: {
+      en: 'Allocate to the goal with the closest deadline',
+      ar: 'املأ الأهداف الأقرب للنهاية أولاً',
+    },
   },
 ];

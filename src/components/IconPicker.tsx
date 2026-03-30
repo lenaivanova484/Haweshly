@@ -71,7 +71,9 @@ export default function IconPicker({ value, onChange, label = 'Icon' }: Props) {
 
             {/* Header */}
             <View style={[styles.sheetHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Text style={[styles.sheetTitle, { color: theme.text }]}>Choose Icon</Text>
+              <Text style={[styles.sheetTitle, { color: theme.text }]}>
+                {isRTL ? 'اختر أيقونة' : 'Choose Icon'}
+              </Text>
               <TouchableOpacity onPress={() => setVisible(false)}
                 style={[styles.closeBtn, { backgroundColor: theme.inputBg }]}>
                 <Text style={[styles.closeTxt, { color: theme.text }]}>✕</Text>
@@ -206,9 +208,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: SPACING.md,
   },
-  tabsScroll: { flexGrow: 0 },
+  tabsScroll: { 
+    flexGrow: 0,
+    marginHorizontal: SPACING.lg,
+  },
   tabs: {
-    paddingHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.sm,
     gap: SPACING.xs,
     paddingBottom: SPACING.sm,
   },

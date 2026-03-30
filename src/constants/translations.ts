@@ -88,6 +88,7 @@ export const translations = {
     daily: 'Daily',
     weekly: 'Weekly',
     monthly: 'Monthly',
+    yearly: 'Yearly',
     testNotification: 'Test Notification',
     about: 'About',
     version: 'Version',
@@ -153,6 +154,35 @@ export const translations = {
     resetFilter: 'Reset',
     noResults: 'No goals match your search',
     noResultsDesc: 'Try a different search term or reset filters',
+
+    // Expenses Screen
+    expenses: 'Expenses',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+    thisYear: 'This Year',
+    totalExpenses: 'Total Expenses',
+    noExpenses: 'No expenses recorded yet',
+    addExpense: 'Add Expense',
+    topCategory: 'Top Category',
+    dailyAverage: 'Daily Average',
+    deleteExpense: 'Delete Expense',
+    confirmDeleteExpense: 'Are you sure you want to delete this expense?',
+
+    // Expenses Analytics Screen
+    spendingOverTime: 'Spending Over Time',
+    spendingByCategory: 'Spending by Category',
+    category: 'Category',
+    total: 'Total',
+    average: 'Average',
+    chart: 'Chart',
+    list: 'List',
+    insights: 'Insights',
+    monthlyOverview: 'Monthly Overview',
+
+    // Add Expense Screen
+    dateAndTime: 'Date & Time',
   },
   ar: {
     // Lock
@@ -241,6 +271,7 @@ export const translations = {
     daily: 'يومي',
     weekly: 'أسبوعي',
     monthly: 'شهري',
+    yearly: 'سنوي',
     testNotification: 'تجربة الإشعار',
     about: 'حول',
     version: 'الإصدار',
@@ -306,5 +337,34 @@ export const translations = {
     resetFilter: 'إعادة تعيين',
     noResults: 'لا توجد أهداف تطابق بحثك',
     noResultsDesc: 'جرب كلمة بحث مختلفة أو أعد تعيين الفلتر',
+
+    // Expenses Screen
+    expenses: 'المصروفات',
+    today: 'اليوم',
+    yesterday: 'أمس',
+    thisWeek: 'هذا الأسبوع',
+    thisMonth: 'هذا الشهر',
+    thisYear: 'هذا العام',
+    totalExpenses: 'إجمالي المصروفات',
+    noExpenses: 'لا توجد مصروفات مسجلة بعد',
+    addExpense: 'إضافة مصروف',
+    topCategory: 'أعلى فئة',
+    dailyAverage: 'المتوسط اليومي',
+    deleteExpense: 'حذف المصروف',
+    confirmDeleteExpense: 'هل أنت متأكد من حذف هذا المصروف؟',
+
+    // Expenses Analytics Screen
+    spendingOverTime: 'الإنفاق مع مرور الوقت',
+    total: 'الإجمالي',
+    average: 'المتوسط',
+    spendingByCategory: 'الإنفاق حسب الفئة',
+    category: 'الفئة',
+    chart: 'رسم بياني',
+    list: 'قائمة',
+    insights: 'رؤى',
+    monthlyOverview: 'نظرة شهريّة',
+
+    // Add Expense Screen
+    dateAndTime: 'التاريخ والوقت',
   },
 };

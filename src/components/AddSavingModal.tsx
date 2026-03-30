@@ -15,6 +15,7 @@ import { getTodayString } from '../utils/goalUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { DatePickerInput } from './DatePickerInput';
 
 interface AddSavingModalProps {
   visible: boolean;
@@ -164,72 +165,19 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             )}
 
             {/* Date */}
-            <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: SPACING.md }]}>
-              <Text style={[styles.label, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.date}</Text>
-              <Text style={[styles.requiredStar, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}> *</Text>
-            </View>
-            <TextInput
-              style={[styles.input, {
-                color: colors.text,
-                backgroundColor: colors.surfaceSecondary,
-                borderColor: err('date') ? Colors.light.error : colors.border,
-                textAlign: isRTL ? 'right' : 'left',
-                borderWidth: err('date') ? 2 : 1.5,
-              }]}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.textTertiary}
+            <DatePickerInput
+              label={t.date}
               value={date}
-              onChangeText={v => handleChange('date', v)}
-              onBlur={() => touch('date')}
-              returnKeyType="next"
+              onChange={setDate}
+              onBlur={() => {
+                touch('date');
+                const newErrors = validate({ amount, date, note: note });
+                setErrors(prev => ({ ...prev, date: newErrors.date || '' }));
+              }}
+              error={err('date')}
+              textAlign={isRTL ? 'right' : 'left'}
+              required
             />
-            {err('date') && (
-              <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={[styles.errorIcon, { textAlign: isRTL ? 'right' : 'left' }]}>
-                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={14} color={Colors.light.error} />
-                </Text>
-                <Text style={[styles.errorText, { textAlign: isRTL ? 'right' : 'left' }]}>{err('date')}</Text>
-              </View>
-            )}
-
-            {/* Note */}
-            <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: SPACING.md }]}>
-              <Text style={[styles.label, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.note}</Text>
-              <Text style={[styles.label, { color: colors.textTertiary, fontWeight: '400', textAlign: isRTL ? 'right' : 'left' }]}>
-                {' '}({t.optional ?? 'optional'})
-              </Text>
-            </View>
-            <TextInput
-              style={[styles.input, {
-                color: colors.text,
-                backgroundColor: colors.surfaceSecondary,
-                borderColor: err('note') ? Colors.light.error : colors.border,
-                textAlign: isRTL ? 'right' : 'left',
-                height: 80,
-                textAlignVertical: 'top',
-                paddingTop: SPACING.md,
-                borderWidth: err('note') ? 2 : 1.5,
-              }]}
-              placeholder={t.notePlaceholder}
-              placeholderTextColor={colors.textTertiary}
-              value={note}
-              onChangeText={v => handleChange('note', v)}
-              onBlur={() => touch('note')}
-              multiline
-              maxLength={200}
-            />
-            {err('note') ? (
-              <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={[styles.errorIcon, { textAlign: isRTL ? 'right' : 'left' }]}>
-                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={14} color={Colors.light.error} />
-                </Text>
-                <Text style={[styles.errorText, { textAlign: isRTL ? 'right' : 'left' }]}>{err('note')}</Text>
-              </View>
-            ) : note.length > 150 ? (
-              <Text style={[styles.charCount, { color: note.length >= 200 ? Colors.light.error : colors.textTertiary, textAlign: isRTL ? 'right' : 'left' }]}>
-                {note.length}/200
-              </Text>
-            ) : null}
 
             {/* Actions */}
             <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>

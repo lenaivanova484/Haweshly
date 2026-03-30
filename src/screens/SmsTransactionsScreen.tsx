@@ -25,11 +25,13 @@ import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type FilterType = 'all' | 'deposit' | 'withdrawal';
 
 export default function SmsTransactionsScreen() {
   const { theme } = useTheme();
+  const { isRTL } = useLanguage();
   const { transactions, deleteTransaction, addToBlockList, blockList, scanInbox, reloadTransactions, hasPermission } = useSms();
 
   const { refreshProps } = usePullToRefresh(
@@ -63,12 +65,14 @@ export default function SmsTransactionsScreen() {
 
   const handleDelete = (tx: SmsTransaction) => {
     Alert.alert(
-      'Delete Transaction',
-      `Remove this ${tx.type} of ${tx.amount.toFixed(2)} from ${tx.sender}?\n\nThis will allow it to be re-processed if scanned again.`,
+      isRTL ? 'حذف المعاملة' : 'Delete Transaction',
+      isRTL
+        ? `إزالة هذا ${tx.type} من ${tx.amount.toFixed(2)} من ${tx.sender}?\n\nسيسمح هذا بالمعالجة مرة أخرى إذا تم فحصه مرة أخرى.`
+        : `Remove this ${tx.type} of ${tx.amount.toFixed(2)} from ${tx.sender}?\n\nThis will allow it to be re-processed if scanned again.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: isRTL ? 'إلغاء' : 'Cancel', style: 'cancel' },
         {
-          text: 'Delete',
+          text: isRTL ? 'حذف' : 'Delete',
           style: 'destructive',
           onPress: () => deleteTransaction(tx.id),
         },
@@ -81,16 +85,18 @@ export default function SmsTransactionsScreen() {
       s => s.toLowerCase() === sender.toLowerCase(),
     );
     if (alreadyBlocked) {
-      Alert.alert('Already Blocked', `"${sender}" is already on your block list.`);
+      Alert.alert(isRTL ? 'مُحظر بالفعل' : 'Already Blocked', `"${sender}" is already on your block list.`);
       return;
     }
     Alert.alert(
-      'Block Sender',
-      `Add "${sender}" to your block list? Future messages from this sender will be ignored.`,
+      isRTL ? 'حظر المرسل' : 'Block Sender',
+      isRTL 
+        ? `إضافة "${sender}" إلى قائمة الحظر؟ سيتم تجاهل الرسائل المستقبلية من هذا المرسل.` 
+        : `Add "${sender}" to your block list? Future messages from this sender will be ignored.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: isRTL ? 'إلغاء' : 'Cancel', style: 'cancel' },
         {
-          text: 'Block',
+          text: isRTL ? 'حظر' : 'Block',
           style: 'destructive',
           onPress: () => addToBlockList(sender),
         },
@@ -226,23 +232,27 @@ export default function SmsTransactionsScreen() {
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text }]}>SMS Transactions</Text>
-        <Text style={[styles.subtitle, { color: theme.textMuted }]}>
-          {filtered.length} of {transactions.length} records
+        <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left', color: theme.text }]}>{isRTL ? 'رسائل SMS' : 'SMS Transactions'}</Text>
+        <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left', color: theme.textMuted }]}>
+          {filtered.length}
+          {isRTL ? ' من ' : ' of '} 
+          {transactions.length} 
+          {isRTL ? ' سجل' : ' records'}
         </Text>
       </View>
 
       {/* Search */}
-      <View style={[styles.searchWrap, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <Text style={{ color: theme.textMuted, marginRight: SPACING.xs }}>
-          <FontAwesomeIcon icon={resolveIcon('faSearch')} size={14} color={theme.textSecondary} style={{ marginRight: SPACING.sm }} />
+      <View style={[styles.searchWrap, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <Text style={{ color: theme.textMuted, marginRight: isRTL ? 0 : SPACING.xs, marginLeft: isRTL ? SPACING.xs : 0 }}>
+          <FontAwesomeIcon icon={resolveIcon('faSearch')} size={14} color={theme.textSecondary} style={{ marginRight: !isRTL ? SPACING.sm : 0, marginLeft: isRTL ? SPACING.sm : 0 }} />
         </Text>
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Search sender or message…"
+          placeholder={isRTL ? 'بحث عن المرسل أو الرسالة…' : 'Search sender or message…'}
           placeholderTextColor={theme.textMuted}
           style={[styles.searchInput, { color: theme.text }]}
+          textAlign={isRTL ? 'right' : 'left'}
         />
         {search.length > 0 && (
           <TouchableOpacity onPress={() => setSearch('')}>
@@ -254,7 +264,7 @@ export default function SmsTransactionsScreen() {
       </View>
 
       {/* Filter pills */}
-      <View style={styles.filterRow}>
+      <View style={[styles.filterRow, {flexDirection: isRTL ? 'row-reverse' : 'row'}]}>
         {(['all', 'deposit', 'withdrawal'] as FilterType[]).map(f => (
           <TouchableOpacity
             key={f}
@@ -269,7 +279,7 @@ export default function SmsTransactionsScreen() {
                 styles.filterTxt,
                 { color: filter === f ? COLORS.primary : theme.textSecondary },
               ]}>
-              {f === 'all' ? 'All' : f === 'deposit' ? '↓ Deposits' : '↑ Withdrawals'}
+              {f === 'all' ? (isRTL ? 'الكل' : 'All') : f === 'deposit' ? (isRTL ? '↓ الودائع' : '↓ Deposits') : (isRTL ? '↑ السحب' : '↑ Withdrawals')}
             </Text>
           </TouchableOpacity>
         ))}
@@ -289,10 +299,10 @@ export default function SmsTransactionsScreen() {
               <FontAwesomeIcon icon={resolveIcon('faInbox')} size={48} color={theme.textMuted} />
             </Text>
             <Text style={[styles.emptyTitle, { color: theme.text }]}>
-              No transactions yet
+              {isRTL ? 'لا توجد معاملات بعد' : 'No transactions yet'}
             </Text>
             <Text style={[styles.emptyDesc, { color: theme.textMuted }]}>
-              Grant SMS permission and tap "Scan Inbox" in Settings to detect bank messages.
+              {isRTL ? 'قم بمنح إذن SMS والنقر على "مسح البريد الوارد" في الإعدادات للكشف عن رسائل البنك.' : 'Grant SMS permission and tap "Scan Inbox" in Settings to detect bank messages.'}
             </Text>
           </View>
         }
@@ -312,7 +322,6 @@ const styles = StyleSheet.create({
   title: { fontSize: FONT_SIZE.xxl, fontWeight: '800' },
   subtitle: { fontSize: FONT_SIZE.sm, marginTop: 2 },
   searchWrap: {
-    flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.sm,
@@ -323,7 +332,6 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, fontSize: FONT_SIZE.md, paddingVertical: 0 },
   filterRow: {
-    flexDirection: 'row',
     paddingHorizontal: SPACING.lg,
     gap: SPACING.sm,
     marginBottom: SPACING.md,

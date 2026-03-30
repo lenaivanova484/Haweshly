@@ -40,15 +40,15 @@ export function getDaysLeft(deadline: string): number {
 
 export function getMonthlySavingsNeeded(remaining: number, deadline: string): number {
   const days = getDaysLeft(deadline);
+  if (days < 30) return 0;
   const months = days / 30;
-  if (months <= 0) return remaining;
   return remaining / months;
 }
 
 export function getWeeklySavingsNeeded(remaining: number, deadline: string): number {
   const days = getDaysLeft(deadline);
+  if (days < 7) return 0;
   const weeks = days / 7;
-  if (weeks <= 0) return remaining;
   return remaining / weeks;
 }
 

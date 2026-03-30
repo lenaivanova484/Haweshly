@@ -8,12 +8,15 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   RefreshControl,
+  BackHandler,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useGoals } from '../contexts/GoalsContext';
+import ConfirmModal from '../components/ConfirmModal';
 import { getTotalSaved, getProgress, formatCurrency } from '../utils/calculations';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Card from '../components/Card';
@@ -27,10 +30,12 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh';
 export default function DashboardScreen({ navigation }: any) {
   const { theme, isDark } = useTheme();
   const { t, isRTL } = useLanguage();
+  const { lock } = useAuth();
   const { goals, entries, reload } = useGoals();
   const { width } = useWindowDimensions();
   const CARD_WIDTH = width * 0.8;
   const [userName, setUserName] = useState('');
+  const [exitModalVisible, setExitModalVisible] = useState(false);
 
   const loadUserName = useCallback(async () => {
     const val = await AsyncStorage.getItem(USER_NAME_KEY);
@@ -42,6 +47,19 @@ export default function DashboardScreen({ navigation }: any) {
     useCallback(() => {
       loadUserName();
     }, [loadUserName]),
+  );
+
+  // Handle Android hardware back button to show exit confirmation on DashboardScreen
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        setExitModalVisible(true);
+        return true; // Prevent default back behavior
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, []),
   );
 
   const { refreshProps } = usePullToRefresh(
@@ -168,7 +186,7 @@ export default function DashboardScreen({ navigation }: any) {
         {/* Goals */}
         <View style={[styles.sectionHeader, isRTL ? styles.rtl : styles.ltr]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.goals}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('GoalForm')}>
+          <TouchableOpacity onPress={() => navigation.navigate('GoalForm' as any)}>
             <View style={[styles.addBtn, { backgroundColor: COLORS.accent }]}>
               <Text style={styles.addBtnTxt}>+ {t.addGoal}</Text>
             </View>
@@ -188,7 +206,7 @@ export default function DashboardScreen({ navigation }: any) {
         ) : goals.length === 1 ? (
           <GoalCard
             goal={goals[0]}
-            onPress={() => navigation.navigate('GoalDetail', { goalId: goals[0].id })}
+            onPress={() => navigation.navigate('GoalDetail' as any, { goalId: goals[0].id })}
           />
         ) : (
           <ScrollView
@@ -267,7 +285,7 @@ export default function DashboardScreen({ navigation }: any) {
                     return (
                       <TouchableOpacity
                         key={goal.id}
-                        onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
+                        onPress={() => navigation.navigate('GoalDetail' as any, { goalId: goal.id })}
                         activeOpacity={0.85}
                         style={[styles.favSlideCard, { width: CARD_WIDTH, backgroundColor: theme.card, borderColor: theme.cardBorder, boxShadow: '0 3px 6px rgba(0,0,0,0.2)' }]}
                       >
@@ -305,7 +323,7 @@ export default function DashboardScreen({ navigation }: any) {
                 ]}>
                 {t.recentActivity}
               </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('RecentActivity')}>
+              <TouchableOpacity onPress={() => navigation.navigate('RecentActivity' as any)}>
                 <View style={[styles.addBtn, { backgroundColor: theme.card, borderWidth: 1, borderColor: theme.cardBorder }]}>
                   <Text style={[styles.addBtnTxt, { color: theme.textSecondary }]}>{t.seeMore}</Text>
                 </View>
@@ -355,6 +373,21 @@ export default function DashboardScreen({ navigation }: any) {
 
         <View style={{ height: SPACING.xl }} />
       </ScrollView>
+
+      <ConfirmModal
+        visible={exitModalVisible}
+        title={isRTL ? 'خروج من التطبيق' : 'Exit App'}
+        message={isRTL ? `هل أنت متأكد أنك تريد الخروج من ${t.appName}؟` : `Are you sure you want to exit ${t.appName}?`}
+        confirmLabel={isRTL ? 'خروج' : 'Exit'}
+        cancelLabel={isRTL ? 'البقاء' : 'Stay'}
+        danger={false}
+        onConfirm={() => {
+          setExitModalVisible(false);
+          lock();
+          BackHandler.exitApp();
+        }}
+        onCancel={() => setExitModalVisible(false)}
+      />
     </View>
   );
 }

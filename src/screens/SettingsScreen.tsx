@@ -134,8 +134,10 @@ export default function SettingsScreen({ navigation }: any) {
     updateKeyword,
     deleteKeyword,
     resetKeywords,
-    priority,
-    setPriority,
+    depositPriority,
+    setDepositPriority,
+    withdrawalPriority,
+    setWithdrawalPriority,
     pollInterval,
     setPollInterval,
     transactions,
@@ -209,6 +211,8 @@ export default function SettingsScreen({ navigation }: any) {
   // Modal visibility
   const [pollModalVisible, setPollModalVisible] = useState(false);
   const [kwModalKind, setKwModalKind] = useState<'deposit' | 'withdrawal' | null>(null);
+  const [depositPriorityModalVisible, setDepositPriorityModalVisible] = useState(false);
+  const [withdrawalPriorityModalVisible, setWithdrawalPriorityModalVisible] = useState(false);
 
   const handleSaveName = async (name: string) => {
     setUserName(name);
@@ -465,7 +469,7 @@ export default function SettingsScreen({ navigation }: any) {
         <Section title={isRTL ? 'الملف الشخصي' : 'Profile'}>
           {/* Profile card navigates to full ProfileScreen */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
+            onPress={() => navigation.navigate('Profile' as any)}
             style={[
               styles.profileCard,
               isRTL && styles.rtl,
@@ -502,7 +506,7 @@ export default function SettingsScreen({ navigation }: any) {
           <Row
             label={isRTL ? 'الإنجازات' : 'Achievements'}
             noBorder
-            onPress={() => navigation.navigate('Achievements')}
+            onPress={() => navigation.navigate('Achievements' as any)}
             right={
               <View style={[styles.nameRight, isRTL && styles.rtl]}>
                 <Text style={[styles.nameValue, { color: COLORS.accent }]}>
@@ -748,57 +752,42 @@ export default function SettingsScreen({ navigation }: any) {
 
         {/* ── Auto Allocation Priority ───────────────────────────────── */}
         <Section title={isRTL ? 'أولوية التوزيع التلقائي' : 'Auto Allocation Priority'}>
-          <View style={{ paddingHorizontal: SPACING.md, paddingTop: SPACING.sm, paddingBottom: SPACING.xs }}>
-            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm }}>
-              {isRTL ? 'اختر كيف يتم توزيع المعاملات المكتشفة على أهدافك.' : 'Choose how detected deposits & withdrawals are distributed to your goals.'}
-            </Text>
-          </View>
-          {ALLOCATION_PRIORITY_OPTIONS.map((opt, idx) => {
-            const isSelected = priority === opt.key;
-            return (
-              <TouchableOpacity
-                key={opt.key}
-                onPress={() => setPriority(opt.key)}
-                style={[
-                  styles.priorityRow,
-                  isSelected && { backgroundColor: COLORS.accent + '18' },
-                  idx < ALLOCATION_PRIORITY_OPTIONS.length - 1 && {
-                    borderBottomWidth: 1,
-                    borderBottomColor: theme.cardBorder,
-                  },
-                ]}>
-                <View style={styles.priorityRadio}>
-                  <View
-                    style={[
-                      styles.radioOuter,
-                      { borderColor: isSelected ? COLORS.accent : theme.textMuted },
-                    ]}>
-                    {isSelected && <View style={styles.radioInner} />}
-                  </View>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
-                    {opt.label}
-                  </Text>
-                  <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
-                    {opt.description}
-                  </Text>
-                </View>
-                {isSelected && (
-                  <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
-                    <FontAwesomeIcon icon={resolveIcon('faCheck')} size={18} color={COLORS.accent} />
-                  </Text>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+          <Row
+            label={isRTL ? 'أولوية الودائع' : 'Deposit Priority'}
+            onPress={() => setDepositPriorityModalVisible(true)}
+            right={
+              <View style={[styles.nameRight, isRTL && styles.rtl]}>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>
+                  {ALLOCATION_PRIORITY_OPTIONS.find(o => o.key === depositPriority)?.label[isRTL ? 'ar' : 'en'] ?? ''}
+                </Text>
+                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
+                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
+                </Text>
+              </View>
+            }
+          />
+          <Row
+            label={isRTL ? 'أولوية السحوبات' : 'Withdrawal Priority'}
+            noBorder
+            onPress={() => setWithdrawalPriorityModalVisible(true)}
+            right={
+              <View style={[styles.nameRight, isRTL && styles.rtl]}>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>
+                  {ALLOCATION_PRIORITY_OPTIONS.find(o => o.key === withdrawalPriority)?.label[isRTL ? 'ar' : 'en'] ?? ''}
+                </Text>
+                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
+                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
+                </Text>
+              </View>
+            }
+          />
         </Section>
 
         {/* ── Blocked Senders ────────────────────────────────── */}
         <Section title={isRTL ? 'المرسلون المحظورون' : 'Blocked Senders'}>
           {blockList.length === 0 ? (
-            <View style={{ paddingHorizontal: SPACING.md, paddingVertical: SPACING.md }}>
-              <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.sm }}>
+            <View style={{ paddingHorizontal: SPACING.md, paddingVertical: SPACING.md, flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+              <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.sm, textAlign: isRTL ? 'right' : 'left' }}>
                 {isRTL ? 'لا يوجد مرسلون محظورون بعد. اضغط على "حظر المرسل" في أي معاملة SMS.' : 'No senders blocked yet. Tap “Block Sender” on any SMS transaction.'}
               </Text>
             </View>
@@ -1102,6 +1091,130 @@ export default function SettingsScreen({ navigation }: any) {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+
+      {/* ── Deposit Priority Modal ── */}
+      <Modal
+        visible={depositPriorityModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setDepositPriorityModalVisible(false)}>
+        <View style={styles.modalRoot}>
+          <TouchableWithoutFeedback onPress={() => setDepositPriorityModalVisible(false)}>
+            <View style={StyleSheet.absoluteFill} />
+          </TouchableWithoutFeedback>
+          <View style={[styles.modalSheet, { backgroundColor: theme.card }]}>
+            <View style={[styles.modalHeader, isRTL && styles.rtl]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                {isRTL ? 'أولوية الودائع' : 'Deposit Priority'}
+              </Text>
+              <TouchableOpacity onPress={() => setDepositPriorityModalVisible(false)}>
+                <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>
+                  <FontAwesomeIcon icon={resolveIcon('faXmark')} size={18} color={theme.textSecondary} />
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' }}>
+              {isRTL ? 'اختر كيف يتم توزيع الودائع المكتشفة على أهدافك.' : 'Choose how detected deposits are distributed to your goals.'}
+            </Text>
+            {ALLOCATION_PRIORITY_OPTIONS.map((opt, idx) => {
+              const isSelected = depositPriority === opt.key;
+              return (
+                <TouchableOpacity
+                  key={opt.key}
+                  onPress={() => { setDepositPriority(opt.key); setDepositPriorityModalVisible(false); }}
+                  style={[
+                    styles.priorityRow,
+                    { flexDirection: isRTL ? 'row-reverse' : 'row', borderRadius: RADIUS.md },
+                    isSelected && { backgroundColor: COLORS.accent + '18' },
+                    idx < ALLOCATION_PRIORITY_OPTIONS.length - 1 && {
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      borderBottomColor: theme.cardBorder,
+                    },
+                  ]}>
+                  <View style={styles.priorityRadio}>
+                    <View style={[styles.radioOuter, { borderColor: isSelected ? COLORS.accent : theme.textMuted }]}>
+                      {isSelected && <View style={styles.radioInner} />}
+                    </View>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left', color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
+                      {opt.label[isRTL ? 'ar' : 'en']}
+                    </Text>
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left', color: theme.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
+                      {opt.description[isRTL ? 'ar' : 'en']}
+                    </Text>
+                  </View>
+                  {isSelected && (
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left', color: COLORS.accent, fontSize: FONT_SIZE.md, fontWeight: '700' }}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </Modal>
+
+      {/* ── Withdrawal Priority Modal ── */}
+      <Modal
+        visible={withdrawalPriorityModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setWithdrawalPriorityModalVisible(false)}>
+        <View style={styles.modalRoot}>
+          <TouchableWithoutFeedback onPress={() => setWithdrawalPriorityModalVisible(false)}>
+            <View style={StyleSheet.absoluteFill} />
+          </TouchableWithoutFeedback>
+          <View style={[styles.modalSheet, { backgroundColor: theme.card }]}>
+            <View style={[styles.modalHeader, isRTL && styles.rtl]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                {isRTL ? 'أولوية السحوبات' : 'Withdrawal Priority'}
+              </Text>
+              <TouchableOpacity onPress={() => setWithdrawalPriorityModalVisible(false)}>
+                <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>
+                  <FontAwesomeIcon icon={resolveIcon('faXmark')} size={18} color={theme.textSecondary} />
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' }}>
+              {isRTL ? 'اختر كيف يتم توزيع السحوبات المكتشفة على أهدافك.' : 'Choose how detected withdrawals are distributed to your goals.'}
+            </Text>
+            {ALLOCATION_PRIORITY_OPTIONS.map((opt, idx) => {
+              const isSelected = withdrawalPriority === opt.key;
+              return (
+                <TouchableOpacity
+                  key={opt.key}
+                  onPress={() => { setWithdrawalPriority(opt.key); setWithdrawalPriorityModalVisible(false); }}
+                  style={[
+                    styles.priorityRow,
+                    { flexDirection: isRTL ? 'row-reverse' : 'row', borderRadius: RADIUS.md },
+                    isSelected && { backgroundColor: COLORS.accent + '18' },
+                    idx < ALLOCATION_PRIORITY_OPTIONS.length - 1 && {
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      borderBottomColor: theme.cardBorder,
+                    },
+                  ]}>
+                  <View style={styles.priorityRadio}>
+                    <View style={[styles.radioOuter, { borderColor: isSelected ? COLORS.accent : theme.textMuted }]}>
+                      {isSelected && <View style={styles.radioInner} />}
+                    </View>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left', color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
+                      {opt.label[isRTL ? 'ar' : 'en']}
+                    </Text>
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left', color: theme.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
+                      {opt.description[isRTL ? 'ar' : 'en']}
+                    </Text>
+                  </View>
+                  {isSelected && (
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left', color: COLORS.accent, fontSize: FONT_SIZE.md, fontWeight: '700' }}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -1201,7 +1314,6 @@ const styles = StyleSheet.create({
   },
   // Priority styles
   priorityRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
@@ -1244,7 +1356,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   modalTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700' },
 

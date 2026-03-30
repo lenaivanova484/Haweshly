@@ -7,6 +7,7 @@ import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import IconPicker from '../components/IconPicker';
+import { DatePickerInput } from '../components/DatePickerInput';
 
 import IconButton from '../components/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -188,27 +189,25 @@ export default function GoalFormScreen({ navigation, route }: Props) {
             textAlign={isRTL ? 'right' : 'left'}
             required={true}
           />
-          <TextInput
+
+          <DatePickerInput
             label={t.startDate}
             value={startDate}
-            onChangeText={v => handleChange('startDate', v)}
+            onChange={v => handleChange('startDate', v)}
             onBlur={() => handleBlur('startDate')}
-            placeholder="YYYY-MM-DD"
             error={errors.startDate}
-            hint={!errors.startDate ? 'Format: YYYY-MM-DD' : undefined}
-            textAlign={isRTL ? 'right' : 'left'}
             required={true}
+            textAlign={isRTL ? 'right' : 'left'}
           />
-          <TextInput
+
+          <DatePickerInput
             label={t.deadline}
             value={deadline}
-            onChangeText={v => handleChange('deadline', v)}
+            onChange={v => handleChange('deadline', v)}
             onBlur={() => handleBlur('deadline')}
-            placeholder="YYYY-MM-DD"
             error={errors.deadline}
-            hint={!errors.deadline ? 'Format: YYYY-MM-DD' : undefined}
-            textAlign={isRTL ? 'right' : 'left'}
             required={true}
+            textAlign={isRTL ? 'right' : 'left'}
           />
           <TextInput
             label={t.goalNotes}

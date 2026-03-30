@@ -15,6 +15,7 @@ import { SPACING, RADIUS, FONT_SIZE, COLORS } from '../constants/theme';
 import { getTodayString } from '../utils/goalUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import { DatePickerInput } from './DatePickerInput';
 
 interface AddGoalModalProps {
   visible: boolean;
@@ -199,40 +200,42 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
               </Field>
 
               {/* Start Date */}
-              <Field label={t.startDate} error={err('startDate')} colors={colors} isRTL={isRTL} required>
-                <TextInput
-                  style={[styles.input, {
-                    color: colors.text,
-                    backgroundColor: colors.surfaceSecondary,
-                    borderColor: err('startDate') ? COLORS.error : colors.border,
-                  }]}
-                  textAlign={isRTL ? 'right' : 'left'}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textTertiary}
-                  value={startDate}
-                  onChangeText={v => handleChange('startDate', v)}
-                  onBlur={() => touch('startDate')}
-                  returnKeyType="next"
-                />
-              </Field>
+              <DatePickerInput
+                label={t.startDate}
+                value={startDate}
+                onChange={v => handleChange('startDate', v)}
+                onBlur={() => {
+                  touch('startDate');
+                  const newErrors = validate({ name, targetAmount, startDate, targetDate });
+                  setErrors(prev => ({
+                    ...prev,
+                    startDate: newErrors.startDate || '',
+                    targetDate: newErrors.targetDate || '',
+                  }));
+                }}
+                error={err('startDate')}
+                textAlign={isRTL ? 'right' : 'left'}
+                required
+              />
 
               {/* Target Date */}
-              <Field label={t.targetDate} error={err('targetDate')} colors={colors} isRTL={isRTL} required>
-                <TextInput
-                  style={[styles.input, {
-                    color: colors.text,
-                    backgroundColor: colors.surfaceSecondary,
-                    borderColor: err('targetDate') ? COLORS.error : colors.border,
-                  }]}
-                  textAlign={isRTL ? 'right' : 'left'}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textTertiary}
-                  value={targetDate}
-                  onChangeText={v => handleChange('targetDate', v)}
-                  onBlur={() => touch('targetDate')}
-                  returnKeyType="done"
-                />
-              </Field>
+              <DatePickerInput
+                label={t.targetDate}
+                value={targetDate}
+                onChange={v => handleChange('targetDate', v)}
+                onBlur={() => {
+                  touch('targetDate');
+                  const newErrors = validate({ name, targetAmount, startDate, targetDate });
+                  setErrors(prev => ({
+                    ...prev,
+                    startDate: newErrors.startDate || '',
+                    targetDate: newErrors.targetDate || '',
+                  }));
+                }}
+                error={err('targetDate')}
+                textAlign={isRTL ? 'right' : 'left'}
+                required
+              />
 
             </ScrollView>
 

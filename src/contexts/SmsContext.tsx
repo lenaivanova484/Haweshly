@@ -100,10 +100,11 @@ async function configureBackgroundFetch(
 }
 
 // ─── Storage Keys ─────────────────────────────────────────────────────────────
-const KEYWORDS_KEY      = '@haweshly_sms_keywords';
-const PRIORITY_KEY      = '@haweshly_allocation_priority';
-const POLL_INTERVAL_KEY = '@haweshly_poll_interval';
-const PERMISSION_KEY    = '@haweshly_sms_permission';
+const KEYWORDS_KEY              = '@haweshly_sms_keywords';
+const DEPOSIT_PRIORITY_KEY      = '@haweshly_allocation_priority_deposit';
+const WITHDRAWAL_PRIORITY_KEY   = '@haweshly_allocation_priority_withdrawal';
+const POLL_INTERVAL_KEY         = '@haweshly_poll_interval';
+const PERMISSION_KEY            = '@haweshly_sms_permission';
 
 // ─── Context Types ────────────────────────────────────────────────────────────
 export interface SmsContextType {
@@ -114,9 +115,11 @@ export interface SmsContextType {
   deleteKeyword: (kind: 'deposit' | 'withdrawal', word: string) => Promise<void>;
   resetKeywords: (kind: 'deposit' | 'withdrawal') => Promise<void>;
 
-  // Priority
-  priority: AllocationPriority;
-  setPriority: (p: AllocationPriority) => Promise<void>;
+  // Priority (separate for deposits and withdrawals)
+  depositPriority: AllocationPriority;
+  setDepositPriority: (p: AllocationPriority) => Promise<void>;
+  withdrawalPriority: AllocationPriority;
+  setWithdrawalPriority: (p: AllocationPriority) => Promise<void>;
 
   // Poll interval
   pollInterval: PollInterval;
@@ -153,7 +156,8 @@ export function SmsProvider({ children }: { children: ReactNode }) {
     deposit: DEFAULT_DEPOSIT_KEYWORDS,
     withdrawal: DEFAULT_WITHDRAWAL_KEYWORDS,
   });
-  const [priority, setPriorityState] = useState<AllocationPriority>(DEFAULT_ALLOCATION_PRIORITY);
+  const [depositPriority, setDepositPriorityState] = useState<AllocationPriority>(DEFAULT_ALLOCATION_PRIORITY);
+  const [withdrawalPriority, setWithdrawalPriorityState] = useState<AllocationPriority>(DEFAULT_ALLOCATION_PRIORITY);
   const [pollInterval, setPollIntervalState] = useState<PollInterval>(DEFAULT_POLL_INTERVAL);
   const [transactions, setTransactions] = useState<SmsTransaction[]>([]);
   const [blockList, setBlockListState] = useState<string[]>([]);
@@ -175,24 +179,26 @@ export function SmsProvider({ children }: { children: ReactNode }) {
   const pollOnceRef = useRef<() => Promise<void>>(async () => {});
 
   // Always-current ref so async callbacks see latest state without stale closures
-  const latestRef = useRef({ goals, entries, keywords, priority, blockList });
+  const latestRef = useRef({ goals, entries, keywords, depositPriority, withdrawalPriority, blockList });
   useEffect(() => {
-    latestRef.current = { goals, entries, keywords, priority, blockList };
-  }, [goals, entries, keywords, priority, blockList]);
+    latestRef.current = { goals, entries, keywords, depositPriority, withdrawalPriority, blockList };
+  }, [goals, entries, keywords, depositPriority, withdrawalPriority, blockList]);
 
   // ── Load persisted data ────────────────────────────────────────────────────
   useEffect(() => {
     (async () => {
-      const [kwRaw, prRaw, txRaw, bl, piRaw, permRaw] = await Promise.all([
+      const [kwRaw, dpRaw, wpRaw, txRaw, bl, piRaw, permRaw] = await Promise.all([
         AsyncStorage.getItem(KEYWORDS_KEY),
-        AsyncStorage.getItem(PRIORITY_KEY),
+        AsyncStorage.getItem(DEPOSIT_PRIORITY_KEY),
+        AsyncStorage.getItem(WITHDRAWAL_PRIORITY_KEY),
         loadSmsTransactions(),
         loadBlockList(),
         AsyncStorage.getItem(POLL_INTERVAL_KEY),
         AsyncStorage.getItem(PERMISSION_KEY),
       ]);
       if (kwRaw) setKeywords(JSON.parse(kwRaw));
-      if (prRaw) setPriorityState(prRaw as AllocationPriority);
+      if (dpRaw) setDepositPriorityState(dpRaw as AllocationPriority);
+      if (wpRaw) setWithdrawalPriorityState(wpRaw as AllocationPriority);
       if (piRaw) setPollIntervalState(Number(piRaw) as PollInterval);
       // Restore cached permission so the UI renders correctly immediately
       if (permRaw === 'true') setHasPermission(true);
@@ -279,7 +285,8 @@ export function SmsProvider({ children }: { children: ReactNode }) {
       },
       runningEntries: SavingsEntry[],
     ): Promise<SavingsEntry[]> => {
-      const { goals: g, priority: p } = latestRef.current;
+      const { goals: g, depositPriority: dp, withdrawalPriority: wp } = latestRef.current;
+      const p = parsed.type === 'deposit' ? dp : wp;
 
       // Allocate using the live running balance for this scan session
       const allocations: GoalAllocation[] = allocateToGoals(g, runningEntries, parsed.amount, parsed.type, p);
@@ -543,10 +550,16 @@ export function SmsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  // ── Priority CRUD ─────────────────────────────────────────────────────────
-  const setPriority = useCallback(async (p: AllocationPriority) => {
-    setPriorityState(p);
-    await AsyncStorage.setItem(PRIORITY_KEY, p);
+  // ── Deposit Priority Setter ────────────────────────────────────────────────
+  const setDepositPriority = useCallback(async (p: AllocationPriority) => {
+    setDepositPriorityState(p);
+    await AsyncStorage.setItem(DEPOSIT_PRIORITY_KEY, p);
+  }, []);
+
+  // ── Withdrawal Priority Setter ──────────────────────────────────────────────
+  const setWithdrawalPriority = useCallback(async (p: AllocationPriority) => {
+    setWithdrawalPriorityState(p);
+    await AsyncStorage.setItem(WITHDRAWAL_PRIORITY_KEY, p);
   }, []);
 
   const setPollInterval = useCallback(async (ms: PollInterval) => {
@@ -568,8 +581,10 @@ export function SmsProvider({ children }: { children: ReactNode }) {
         updateKeyword,
         deleteKeyword,
         resetKeywords,
-        priority,
-        setPriority,
+        depositPriority,
+        setDepositPriority,
+        withdrawalPriority,
+        setWithdrawalPriority,
         pollInterval,
         setPollInterval,
         transactions,
