@@ -220,7 +220,8 @@ import {
   faXRay,
   faFileInvoice,
   faCouch,
-  faPhone
+  faPhone,
+  faCheckCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -458,6 +459,7 @@ export const ICON_MAP: Record<string, IconDefinition> = {
   faFileInvoice,
   faCouch,
   faPhone,
+  faCheckCircle,
 
   faSpotify,
   faYoutube,

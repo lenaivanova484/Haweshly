@@ -70,8 +70,10 @@ export default function DashboardScreen({ navigation }: any) {
     theme.card,
   );
 
-  const overallSaved = goals.reduce((sum, g) => sum + getTotalSaved(entries, g.id), 0);
-  const overallTarget = goals.reduce((sum, g) => sum + g.targetAmount, 0);
+  // Exclude completed goals from dashboard totals
+  const activeGoalsList = goals.filter(g => !g.isCompleted);
+  const overallSaved = activeGoalsList.reduce((sum, g) => sum + getTotalSaved(entries, g.id), 0);
+  const overallTarget = activeGoalsList.reduce((sum, g) => sum + g.targetAmount, 0);
   const overallProgress = getProgress(overallSaved, overallTarget);
 
   const recentEntries = [...entries]
@@ -140,7 +142,7 @@ export default function DashboardScreen({ navigation }: any) {
                   styles.heroStatVal,
                   { color: !isDark ? COLORS.light.text : COLORS.dark.text, textAlign: isRTL ? 'right' : 'left' },
                 ]}>
-                {goals.length}
+                {activeGoalsList.length}
               </Text>
               <Text
                 style={[
@@ -193,7 +195,7 @@ export default function DashboardScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
-        {goals.length === 0 ? (
+        {activeGoalsList.length === 0 ? (
           <Card style={styles.emptyCard}>
             <Text style={styles.emptyEmoji}>
               <FontAwesomeIcon icon={resolveIcon('faFaceSadTear')} size={48} color={theme.textMuted} />
@@ -203,10 +205,10 @@ export default function DashboardScreen({ navigation }: any) {
               {t.noGoalsDesc}
             </Text>
           </Card>
-        ) : goals.length === 1 ? (
+        ) : activeGoalsList.length === 1 ? (
           <GoalCard
-            goal={goals[0]}
-            onPress={() => navigation.navigate('GoalDetail' as any, { goalId: goals[0].id })}
+            goal={activeGoalsList[0]}
+            onPress={() => navigation.navigate('GoalDetail' as any, { goalId: activeGoalsList[0].id })}
           />
         ) : (
           <ScrollView
@@ -217,7 +219,7 @@ export default function DashboardScreen({ navigation }: any) {
             snapToInterval={CARD_WIDTH + SPACING.sm}
             snapToAlignment="start"
           >
-            {goals.map(goal => (
+            {activeGoalsList.map(goal => (
               <View key={goal.id} style={[styles.goalSlideWrap, { width: CARD_WIDTH }]}>
                 <GoalCard
                   goal={goal}
@@ -230,7 +232,7 @@ export default function DashboardScreen({ navigation }: any) {
 
         {/* ── Favorite Goals ── */}
         {(() => {
-          const favoriteGoals = goals.filter(g => g.isFavorite);
+          const favoriteGoals = activeGoalsList.filter(g => g.isFavorite);
           return (
             <>
               <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' }]}>{t.favoriteGoals}</Text>
@@ -341,6 +343,7 @@ export default function DashboardScreen({ navigation }: any) {
                     style={[
                       styles.activityRow,
                       isRTL ? styles.rtl : styles.ltr,
+                      goal?.isCompleted && { backgroundColor: COLORS.success + '08' },
                       idx < recentEntries.length - 1 && {
                         borderBottomWidth: 1,
                         borderBottomColor: theme.cardBorder,
@@ -380,7 +383,7 @@ export default function DashboardScreen({ navigation }: any) {
         message={isRTL ? `هل أنت متأكد أنك تريد الخروج من ${t.appName}؟` : `Are you sure you want to exit ${t.appName}?`}
         confirmLabel={isRTL ? 'خروج' : 'Exit'}
         cancelLabel={isRTL ? 'البقاء' : 'Stay'}
-        danger={false}
+        danger={true}
         onConfirm={() => {
           setExitModalVisible(false);
           lock();

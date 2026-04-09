@@ -17,8 +17,8 @@ interface Props {
 }
 
 export default function ConfirmModal({ visible, title, message, confirmLabel = 'Delete', cancelLabel = 'Cancel', onConfirm, onCancel, danger = true }: Props) {
-  const { theme, isDark } = useTheme();
-  const { t, isRTL } = useLanguage();
+  const { theme } = useTheme();
+  const { isRTL } = useLanguage();
   
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -42,5 +42,5 @@ const styles = StyleSheet.create({
   title: { fontSize: FONT_SIZE.xl, fontWeight: '800', marginBottom: SPACING.sm },
   message: { fontSize: FONT_SIZE.md, lineHeight: 22, marginBottom: SPACING.lg },
   actions: { flexDirection: 'row', gap: SPACING.sm },
-  btn: { flex: 1 },
+  btn: { flex: 1, textAlign: 'center' },
 });

@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Modal, KeyboardAvoidingView, Platfo
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
-import { getTotalSaved, getProgress, getDaysLeft, getMonthlySavingsNeeded, getWeeklySavingsNeeded, getDailySavingsNeeded, formatCurrency, formatDate, generateId } from '../utils/calculations';
+import { getTotalSaved, getProgress, getDaysLeft, getMonthlySavingsNeeded, getWeeklySavingsNeeded, getDailySavingsNeeded, formatCurrency, formatDate } from '../utils/calculations';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Card from '../components/Card';
 import ProgressBar from '../components/ProgressBar';
@@ -23,7 +23,20 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh';
 export default function GoalDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries, addEntry, updateEntry, deleteEntry, deleteGoal, reload } = useGoals();
+  const { goals, entries, addEntry, updateEntry, deleteEntry, deleteGoal, markGoalAsCompleted, reload } = useGoals();
+
+  // Initialize all state hooks at the top before any conditional logic
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<any>(null);
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
+  const [showDeleteGoal, setShowDeleteGoal] = useState(false);
+  const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
+  const [showGoalExport, setShowGoalExport] = useState(false);
+  const [loadingExportId, setLoadingExportId] = useState<string | null>(null);
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
+  const [entryErrors, setEntryErrors] = useState<{ amount?: string; date?: string }>({});
+  const [entryTouched, setEntryTouched] = useState<{ amount?: boolean; date?: boolean }>({});
 
   const { refreshProps } = usePullToRefresh(
     useCallback(async () => { await reload(); }, [reload]),
@@ -39,19 +52,6 @@ export default function GoalDetailScreen({ navigation, route }: any) {
   const progress = getProgress(totalSaved, goal.targetAmount);
   const remaining = Math.max(0, goal.targetAmount - totalSaved);
   const daysLeft = getDaysLeft(goal.deadline);
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<any>(null);
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
-  const [showDeleteGoal, setShowDeleteGoal] = useState(false);
-  const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
-  const [showGoalExport, setShowGoalExport] = useState(false);
-  const [loadingExportId, setLoadingExportId] = useState<string | null>(null);
-
-  // Validation state for the savings modal
-  const [entryErrors, setEntryErrors] = useState<{ amount?: string; date?: string }>({});
-  const [entryTouched, setEntryTouched] = useState<{ amount?: boolean; date?: boolean }>({});
 
   const isValidDate = (s: string): boolean => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
@@ -147,6 +147,20 @@ export default function GoalDetailScreen({ navigation, route }: any) {
     navigation.goBack();
   };
 
+  const handleMarkAsCompleted = () => {
+    if (totalSaved < goal.targetAmount) {
+      Alert.alert(
+        'Insufficient Savings',
+        `You need to save ${formatCurrency(goal.targetAmount - totalSaved, t.currency)} more to complete this goal.`,
+        [{ text: t.ok }]
+      );
+      setShowCompleteConfirm(false);
+      return;
+    }
+    markGoalAsCompleted(goal.id);
+    setShowCompleteConfirm(false);
+  };
+
   // ─── Export helpers ─────────────────────────────────────────────────────────
 
   const buildProgressReport = useCallback((): GoalProgressReportData => ({
@@ -219,12 +233,23 @@ export default function GoalDetailScreen({ navigation, route }: any) {
           <Text style={[styles.goalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left', marginLeft: isRTL ? 0 : SPACING.md, marginRight: isRTL ? SPACING.md : 0 }]} numberOfLines={1}>{goal.name}</Text>
         </View>
         <View style={[styles.headerActions, isRTL && styles.rtl]}>
-          <IconButton
-            icon="faPenToSquare"
-            onPress={() => navigation.navigate('GoalForm', { goalId: goal.id })}
-            color={theme.text}
-            backgroundColor={COLORS.info + '22'}
-          />
+          {!goal.isCompleted && (
+            <>
+              <IconButton
+                icon="faPenToSquare"
+                onPress={() => navigation.navigate('GoalForm', { goalId: goal.id })}
+                color={theme.text}
+                backgroundColor={COLORS.info + '22'}
+              />
+              <IconButton
+                icon="faCheckCircle"
+                onPress={() => setShowCompleteConfirm(true)}
+                color={theme.text}
+                backgroundColor={totalSaved >= goal.targetAmount ? COLORS.success + '22' : theme.textMuted + '22'}
+                disabled={totalSaved < goal.targetAmount}
+              />
+            </>
+          )}
           <IconButton
             icon="faTrashCan"
             onPress={() => setShowDeleteGoal(true)}
@@ -247,15 +272,15 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         {/* Summary Card */}
         <Card style={[styles.summaryCard, { borderColor: color + '44' }]}>
           <View style={[styles.summaryIconRow, isRTL && styles.rtl]}>
-            <View style={[styles.summaryIconWrap, { backgroundColor: color + '18' }]}>
-              <FontAwesomeIcon icon={resolveIcon(iconName)} size={24} color={color} />
+            <View style={[styles.summaryIconWrap, { backgroundColor: (goal.isCompleted ? COLORS.success : color) + '18' }]}>
+              <FontAwesomeIcon icon={resolveIcon(iconName)} size={24} color={goal.isCompleted ? COLORS.success : color} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.summaryGoalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.name}</Text>
+              <Text style={[styles.summaryGoalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left', opacity: goal.isCompleted ? 0.7 : 1 }]} numberOfLines={1}>{goal.name}</Text>
               <Text style={[styles.targetLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.of} {formatCurrency(goal.targetAmount, t.currency)}</Text>
             </View>
-            <View style={[styles.progressCircle, { borderColor: color + '44', backgroundColor: color + '11' }]}>
-              <Text style={[styles.progressPct, { color }]}>{Math.round(progress)}%</Text>
+            <View style={[styles.progressCircle, { borderColor: (goal.isCompleted ? COLORS.success : color) + '44', backgroundColor: (goal.isCompleted ? COLORS.success : color) + '11' }]}>
+              <Text style={[styles.progressPct, { color: goal.isCompleted ? COLORS.success : color }]}>{Math.round(progress)}%</Text>
             </View>
           </View>
           <Text style={[styles.savedAmount, { color: totalSaved < 0 ? COLORS.danger : color, marginBottom: SPACING.sm, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
@@ -307,7 +332,9 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         {/* Savings History */}
         <View style={[styles.sectionHeader, isRTL && styles.rtl]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.savingsHistory}</Text>
-          <Button label={`+ ${t.addSavings}`} onPress={openAdd} size="sm" style={styles.addBtn} />
+          {!goal.isCompleted && (
+            <Button label={`+ ${t.addSavings}`} onPress={openAdd} size="sm" style={styles.addBtn} />
+          )}
         </View>
 
         {goalEntries.length === 0 ? (
@@ -323,7 +350,7 @@ export default function GoalDetailScreen({ navigation, route }: any) {
               const entryColor = isWithdrawal ? COLORS.danger : COLORS.success;
               const entryEmoji = isWithdrawal ? 'faArrowTrendDown' : 'faArrowTrendUp';
               return (
-                <View key={entry.id} style={[styles.entryRow, isRTL && styles.rtl, idx < goalEntries.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.cardBorder }]}>
+                <View key={entry.id} style={[styles.entryRow, isRTL && styles.rtl, goal.isCompleted && { backgroundColor: COLORS.success + '08' }, idx < goalEntries.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.cardBorder }]}>
                   <View style={[styles.entryDot, { backgroundColor: entryColor + '22', marginRight: isRTL ? 0 : SPACING.sm, marginLeft: isRTL ? SPACING.sm : 0 }]}>
                     <FontAwesomeIcon icon={resolveIcon(entryEmoji)} size={18} color={ entryColor } />
                   </View>
@@ -334,20 +361,24 @@ export default function GoalDetailScreen({ navigation, route }: any) {
                     <Text style={[styles.entryDate, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{formatDate(entry.date)}</Text>
                   </View>
                   <View style={[styles.entryActions, isRTL && styles.rtl]}>
-                    <IconButton
-                      icon="faPenToSquare"
-                      onPress={() => openEdit(entry)}
-                      color={theme.text}
-                      backgroundColor={COLORS.info + '22'}
-                      size={36}
-                    />
-                    <IconButton
-                      icon="faTrashCan"
-                      onPress={() => setDeleteEntryId(entry.id)}
-                      color={theme.text}
-                      backgroundColor={COLORS.danger + '22'}
-                      size={36}
-                    />
+                    {!goal.isCompleted && (
+                      <IconButton
+                        icon="faPenToSquare"
+                        onPress={() => openEdit(entry)}
+                        color={theme.text}
+                        backgroundColor={COLORS.info + '22'}
+                        size={36}
+                      />
+                    )}
+                    {!goal.isCompleted && (
+                      <IconButton
+                        icon="faTrashCan"
+                        onPress={() => setDeleteEntryId(entry.id)}
+                        color={theme.text}
+                        backgroundColor={COLORS.danger + '22'}
+                        size={36}
+                      />
+                    )}
                   </View>
                 </View>
               );
@@ -430,6 +461,20 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         onCancel={() => setShowDeleteGoal(false)}
       />
       <ConfirmModal
+        visible={showCompleteConfirm}
+        title={isRTL ? "هل تريد وضع علامة على هذا الهدف كمكتمل؟" : "Mark as Completed?"}
+        message={ 
+          isRTL ? `وفّرت ${formatCurrency(totalSaved, t.currency)} من ${formatCurrency(goal.targetAmount, t.currency)}.\nبمجرد إكمال الهدف، لن تتمكن من إضافة أو تعديل أي مدخرات عليه. هل تريد المتابعة؟` :
+          `You've saved ${formatCurrency(totalSaved, t.currency)} of ${formatCurrency(goal.targetAmount, t.currency)}. \nThis goal will be marked as completed and you won't be able to add or edit savings for it anymore. Are you sure?`
+        }
+        confirmLabel={isRTL ? "وضع علامة كمكتمل" : "Mark Completed"}
+        cancelLabel={t.cancel}
+        onConfirm={handleMarkAsCompleted}
+        onCancel={() => setShowCompleteConfirm(false)}
+        danger={false}
+        success={true}
+      />
+      <ConfirmModal
         visible={!!deleteEntryId}
         title={t.confirmDelete}
         message={t.confirmDeleteEntry}
@@ -459,6 +504,8 @@ const styles = StyleSheet.create({
   headerActions: { flexDirection: 'row', gap: SPACING.sm },
   content: { paddingHorizontal: SPACING.lg },
   summaryCard: { marginBottom: SPACING.md },
+  completedBadge: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, marginBottom: SPACING.md, paddingBottom: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.success + '22' },
+  completedLabel: { fontSize: FONT_SIZE.sm, fontWeight: '600', color: COLORS.success },
   summaryIconRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.xs },
   summaryIconWrap: { width: 52, height: 52, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center' },
   summaryGoalName: { fontSize: FONT_SIZE.md, fontWeight: '700' },

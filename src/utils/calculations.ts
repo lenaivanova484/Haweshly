@@ -8,6 +8,7 @@ export interface Goal {
   icon?: string; // FontAwesome icon name, e.g. 'faBullseye'
   isFavorite?: boolean;
   notes?: string;
+  isCompleted?: boolean; // True when goal is marked as completed
 }
 
 export interface SavingsEntry {

@@ -37,14 +37,16 @@ export default function AnalyticsScreen() {
   const [showExport, setShowExport] = useState(false);
   const [loadingExportId, setLoadingExportId] = useState<string | null>(null);
 
-  const totalSavedAll = goals.reduce((sum, g) => sum + getTotalSaved(entries, g.id), 0);
+  // Exclude completed goals from analytics
+  const activeGoals = goals.filter(g => !g.isCompleted);
+  const totalSavedAll = activeGoals.reduce((sum, g) => sum + getTotalSaved(entries, g.id), 0);
   const totalDeposits = entries.filter(e => e.amount > 0).reduce((sum, e) => sum + e.amount, 0);
   const totalWithdrawals = entries.filter(e => e.amount < 0).reduce((sum, e) => sum + Math.abs(e.amount), 0);
   const depositCount = entries.filter(e => e.amount > 0).length;
   const avgPerEntry = depositCount > 0 ? totalDeposits / depositCount : 0;
-  const favoriteCount = goals.filter(g => g.isFavorite).length;
+  const favoriteCount = activeGoals.filter(g => g.isFavorite).length;
 
-  const goalStats = goals.map(g => {
+  const goalStats = activeGoals.map(g => {
     const goalEntries = entries.filter(e => e.goalId === g.id);
     const depositsTotal = goalEntries.filter(e => e.amount > 0).reduce((s, e) => s + e.amount, 0);
     const withdrawalsTotal = goalEntries.filter(e => e.amount < 0).reduce((s, e) => s + Math.abs(e.amount), 0);
@@ -170,7 +172,7 @@ export default function AnalyticsScreen() {
       >
 
         {/* Stat Grid */}
-        <View style={styles.grid}>
+        <View style={[styles.grid, {flexDirection: isRTL ? 'row-reverse' : 'row'}]}>
           {statCards.map((s, i) => (
             <Card key={i} style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: s.color + '22' }]}>
@@ -256,7 +258,7 @@ const styles = StyleSheet.create({
   title: { fontSize: FONT_SIZE.xxl, fontWeight: '800' },
   exportBtn: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
   content: { paddingHorizontal: SPACING.lg },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginBottom: SPACING.md },
+  grid: { flexWrap: 'wrap', gap: SPACING.sm, marginBottom: SPACING.md },
   statCard: { width: '47.5%', alignItems: 'center', paddingVertical: SPACING.md },
   statIcon: { width: 48, height: 48, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginBottom: SPACING.sm },
   statValue: { fontSize: FONT_SIZE.lg, fontWeight: '800', textAlign: 'center' },

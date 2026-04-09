@@ -39,6 +39,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const { t, isRTL } = useLanguage();
   const isEditing = !!editingExpense;
   const categoryScrollRef = React.useRef<ScrollView>(null);
+  const subcategoryScrollRef = React.useRef<ScrollView>(null);
 
   const [amount, setAmount] = useState(editingExpense?.amount.toString() || '');
   const [category, setCategory] = useState<ExpenseCategory>(editingExpense?.category || 'Bills');
@@ -53,6 +54,12 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
       setTimeout(() => categoryScrollRef.current?.scrollToEnd({ animated: false }), 100);
     }
   }, [isRTL, visible]);
+
+  React.useEffect(() => {
+    if (isRTL && visible && subcategoryScrollRef.current && SUBCATEGORIES[category]?.length > 0) {
+      setTimeout(() => subcategoryScrollRef.current?.scrollToEnd({ animated: false }), 100);
+    }
+  }, [isRTL, visible, category]);
 
   React.useEffect(() => {
     if (editingExpense) {
@@ -167,6 +174,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                   style={[
                     styles.categoryButton,
                     {
+                      flexDirection: isRTL ? 'row-reverse' : 'row',
                       backgroundColor: category === cat ? CATEGORY_COLORS[cat] : theme.card,
                       borderColor: category === cat ? CATEGORY_COLORS[cat] : theme.cardBorder,
                       marginRight: isRTL ? 0 : SPACING.xs,
@@ -186,7 +194,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                   <Text
                     style={[
                       styles.categoryButtonText,
-                      { color: category === cat ? '#FFFFFF' : theme.text },
+                      { color: category === cat ? '#FFFFFF' : theme.text, marginLeft: isRTL ? 0 : SPACING.sm, marginRight: isRTL ? SPACING.sm : 0 },
                     ]}
                   >
                     {cat}
@@ -201,6 +209,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             <View style={styles.section}>
               <Text style={[styles.label, { textAlign: isRTL ? 'right' : 'left', color: theme.text }]}>Sub-Category</Text>
               <ScrollView
+                ref={subcategoryScrollRef}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={[styles.subcategoryScroll]}
@@ -212,6 +221,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                     style={[
                       styles.subcategoryButton,
                       {
+                        flexDirection: isRTL ? 'row-reverse' : 'row',
                         backgroundColor: subcategory === subcat ? CATEGORY_COLORS[category] : theme.card,
                         borderColor: subcategory === subcat ? CATEGORY_COLORS[category] : theme.cardBorder,
                         marginRight: isRTL ? 0 : SPACING.xs,
@@ -228,7 +238,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                     <Text
                       style={[
                         styles.subcategoryButtonText,
-                        { color: subcategory === subcat ? '#FFFFFF' : theme.text },
+                        { color: subcategory === subcat ? '#FFFFFF' : theme.text, marginLeft: isRTL ? 0 : SPACING.sm, marginRight: isRTL ? SPACING.sm : 0 },
                       ]}
                     >
                       {subcat}
@@ -446,7 +456,7 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING.xs,
   },
   categoryButton: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
@@ -456,14 +466,14 @@ const styles = StyleSheet.create({
   },
   categoryButtonText: {
     fontSize: FONT_SIZE.xs,
-    marginLeft: SPACING.sm,
+    // marginLeft: SPACING.sm,
     fontWeight: '500',
   },
   subcategoryScroll: {
     marginHorizontal: SPACING.xs,
   },
   subcategoryButton: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
@@ -473,7 +483,7 @@ const styles = StyleSheet.create({
   },
   subcategoryButtonText: {
     fontSize: FONT_SIZE.xs,
-    marginLeft: SPACING.sm,
+    // marginLeft: SPACING.sm,
     fontWeight: '500',
   },
   dateButton: {

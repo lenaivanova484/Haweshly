@@ -311,6 +311,7 @@ export default function RecentActivityScreen({ navigation }: any) {
                   style={[
                     styles.row,
                     isRTL && styles.rtl,
+                    goal?.isCompleted && { backgroundColor: COLORS.success + '08' },
                     idx < filteredEntries.length - 1 && styles.rowBorder,
                     idx < filteredEntries.length - 1 && { borderBottomColor: theme.cardBorder },
                   ]}

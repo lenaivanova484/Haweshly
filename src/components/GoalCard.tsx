@@ -26,20 +26,25 @@ export default function GoalCard({ goal, onPress, onToggleFavorite }: Props) {
   const remaining = Math.max(0, goal.targetAmount - totalSaved);
   const daysLeft = getDaysLeft(goal.deadline);
 
-  const color = progress >= 100 ? COLORS.success : progress >= 60 ? COLORS.accent : COLORS.info;
+  const color = goal.isCompleted ? COLORS.success : progress >= 100 ? COLORS.success : progress >= 60 ? COLORS.accent : COLORS.info;
   const iconName = goal.icon || 'faBullseye';
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
-      <Card style={styles.card}>
+      <Card style={[styles.card, goal.isCompleted && { opacity: 0.8 }]}>
         <View style={[styles.header, isRTL && styles.rtl]}>
           <View style={[styles.iconWrap, { backgroundColor: color + '22' }]}>
             <FontAwesomeIcon icon={resolveIcon(iconName)} size={20} color={color} />
           </View>
           <View style={styles.headerText}>
-            <Text style={[styles.name, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
-              {goal.name}
-            </Text>
+            <View style={[{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: 6 }]}>
+              <Text style={[styles.name, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                {goal.name}
+              </Text>
+              {goal.isCompleted && (
+                <FontAwesomeIcon icon={resolveIcon('faCheckCircle')} size={14} color={COLORS.success} />
+              )}
+            </View>
             <Text style={[styles.target, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
               {t.of} {formatCurrency(goal.targetAmount, t.currency)}
             </Text>
@@ -47,7 +52,7 @@ export default function GoalCard({ goal, onPress, onToggleFavorite }: Props) {
           <View style={[styles.badge, { backgroundColor: color + '22' }]}>
             <Text style={[styles.badgeTxt, { color }]}>{Math.round(progress)}%</Text>
           </View>
-          {onToggleFavorite !== undefined && (
+          {onToggleFavorite !== undefined && !goal.isCompleted && (
             <TouchableOpacity
               onPress={onToggleFavorite}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}

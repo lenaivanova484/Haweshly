@@ -10,6 +10,7 @@ interface GoalsContextType {
   updateGoal: (id: string, updates: Partial<Goal>) => void;
   deleteGoal: (id: string) => void;
   toggleFavorite: (id: string) => void;
+  markGoalAsCompleted: (id: string) => void;
   addEntry: (entry: Omit<SavingsEntry, 'id' | 'createdAt'>) => void;
   updateEntry: (id: string, updates: Partial<SavingsEntry>) => void;
   deleteEntry: (id: string) => void;
@@ -46,6 +47,12 @@ export function GoalsProvider({ children }: { children: ReactNode }) {
     saveGoals([...goals, newGoal]);
   };
   const updateGoal = (id: string, updates: Partial<Goal>) => {
+    const goal = goals.find(g => g.id === id);
+    // Prevent updating completed goals (except for isFavorite and isCompleted itself)
+    if (goal?.isCompleted && !Object.keys(updates).every(k => ['isFavorite', 'isCompleted'].includes(k))) {
+      console.warn('Cannot update properties of completed goal');
+      return;
+    }
     saveGoals(goals.map(g => g.id === id ? { ...g, ...updates } : g));
   };
   const deleteGoal = (id: string) => {
@@ -56,7 +63,26 @@ export function GoalsProvider({ children }: { children: ReactNode }) {
   const toggleFavorite = (id: string) => {
     saveGoals(goals.map(g => g.id === id ? { ...g, isFavorite: !g.isFavorite } : g));
   };
+  const markGoalAsCompleted = (id: string) => {
+    const goal = goals.find(g => g.id === id);
+    if (!goal) return;
+    
+    const totalSaved = getTotalSaved(entries, id);
+    // Prevent completing goals that haven't reached their target
+    if (totalSaved < goal.targetAmount) {
+      console.warn(`Cannot complete goal: Saved ${totalSaved}, Target ${goal.targetAmount}`);
+      return;
+    }
+    
+    saveGoals(goals.map(g => g.id === id ? { ...g, isCompleted: true } : g));
+  };
   const addEntry = (entry: Omit<SavingsEntry, 'id' | 'createdAt'>) => {
+    // Prevent adding entries to completed goals
+    const goal = goals.find(g => g.id === entry.goalId);
+    if (goal?.isCompleted) {
+      console.warn('Cannot add entry to completed goal');
+      return;
+    }
     const newEntry: SavingsEntry = { ...entry, id: generateId(), createdAt: new Date().toISOString() };
     // Use functional updater so concurrent calls within the same render cycle
     // each append to the LATEST state, not a stale closure snapshot.
@@ -102,7 +128,7 @@ export function GoalsProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <GoalsContext.Provider value={{ goals, entries, addGoal, updateGoal, deleteGoal, toggleFavorite, addEntry, updateEntry, deleteEntry, deleteEntriesByTransactionId, reload }}>
+    <GoalsContext.Provider value={{ goals, entries, addGoal, updateGoal, deleteGoal, toggleFavorite, markGoalAsCompleted, addEntry, updateEntry, deleteEntry, deleteEntriesByTransactionId, reload }}>
       {children}
     </GoalsContext.Provider>
   );

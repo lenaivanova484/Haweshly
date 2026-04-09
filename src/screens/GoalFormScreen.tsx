@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, StatusBar, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -33,6 +33,16 @@ export default function GoalFormScreen({ navigation, route }: Props) {
   const [notes, setNotes] = useState(editGoal?.notes || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (editGoal?.isCompleted) {
+      Alert.alert(
+        'Goal Completed',
+        'This goal has been marked as completed and cannot be edited.',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+    }
+  }, [editGoal?.isCompleted, navigation]);
 
   const isValidDate = (s: string): boolean => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
