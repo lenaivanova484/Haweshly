@@ -20,6 +20,12 @@ import OsnPlusIcon from '../../assets/icons/osn_plus.svg';
 import DidiIcon from '../../assets/icons/didi.svg';
 import CareemIcon from '../../assets/icons/careem.svg';
 import IndriveIcon from '../../assets/icons/indrive.svg';
+import MoneyFellowsIcon from '../../assets/icons/money_fellows.svg';
+import ValuIcon from '../../assets/icons/valu.svg';
+import HalanIcon from '../../assets/icons/halan.svg';
+import SouhoolaIcon from '../../assets/icons/souhoola.svg';
+import ContactIcon from '../../assets/icons/contact_now.svg';
+import SymplIcon from '../../assets/icons/sympl.svg';
 
 /**
  * Icon type that can be either:
@@ -53,6 +59,13 @@ export const SUBCATEGORY_ICONS: Record<ExpenseSubCategory, SubcategoryIconType> 
   Anghami: AnghamiIcon,               // TODO: Add custom SVG if available
   'OSN+': OsnPlusIcon,                   // TODO: Add custom SVG if available
   Facebook: 'faFacebook',           // FontAwesome only
+  TikTok: 'faTiktok',               // FontAwesome only
+  Instagram: 'faInstagram',         // FontAwesome only
+  Twitter: 'faTwitter',             // FontAwesome only
+  LinkedIn: 'faLinkedin',           // FontAwesome only
+  Snapchat: 'faSnapchat',           // FontAwesome only
+  Pinterest: 'faPinterest',           // FontAwesome only
+  Microsoft: 'faMicrosoft',         // FontAwesome only
   Discord: 'faDiscord',             // FontAwesome only
   'Club Membership': 'faIdBadge',   // FontAwesome only
   'Other Subs': 'faEllipsis',       // FontAwesome only
@@ -108,6 +121,8 @@ export const SUBCATEGORY_ICONS: Record<ExpenseSubCategory, SubcategoryIconType> 
   Medication: 'faPills',
   Doctor: 'faStethoscope',
   Dentist: 'faTooth',
+  'Lab Tests': 'faVial',
+  'Imaging & Scans': 'faXRay',
   Gym: 'faDumbbell',
   'Mental Health': 'faBrain',
 
@@ -141,6 +156,20 @@ export const SUBCATEGORY_ICONS: Record<ExpenseSubCategory, SubcategoryIconType> 
   'Property Insurance': 'faHouseCrack',
   'Mobile Insurance': 'faMobileScreen',
   'Other Insurance': 'faShieldHalved',
+
+  // Installments
+  'Money Fellows': MoneyFellowsIcon,
+  ValU: ValuIcon,
+  Halan: HalanIcon,
+  Sympl: SymplIcon,
+  Contact: ContactIcon,
+  Souhoola: SouhoolaIcon,
+  'Bank Installment': 'faUniversity',
+  'Credit Card Installment': 'faCreditCard',
+  'Car Installment': 'faCar',
+  'Appliance Installment': 'faTv',
+  'Furniture Installment': 'faCouch',
+  'Other Installment': 'faEllipsis',
 };
 
 /**
@@ -169,7 +198,7 @@ export const IconComponent: React.FC<{
 
   // If icon is a component, render it with width/height
   const SvgIcon = icon;
-  return <SvgIcon width={size * 1.15} height={size * 1.15} />;
+  return <SvgIcon width={size * 1.1} height={size * 1.1} />;
 };
 
 /**

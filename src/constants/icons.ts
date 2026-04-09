@@ -215,7 +215,12 @@ import {
   faPlaneDeparture,
   faHouseCrack,
   faTheaterMasks,
-  faIdBadge
+  faIdBadge,
+  faVial,
+  faXRay,
+  faFileInvoice,
+  faCouch,
+  faPhone
 } from '@fortawesome/free-solid-svg-icons';
 
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -448,6 +453,11 @@ export const ICON_MAP: Record<string, IconDefinition> = {
   faHouseCrack,
   faTheaterMasks,
   faIdBadge,
+  faVial,
+  faXRay,
+  faFileInvoice,
+  faCouch,
+  faPhone,
 
   faSpotify,
   faYoutube,

@@ -100,19 +100,20 @@ export const DEFAULT_WITHDRAWAL_KEYWORDS: string[] = [
 
 // ─── Expense Types ────────────────────────────────────────────────────────────
 
-export type ExpenseCategory = 'Bills' | 'Entertainment' | 'Food' | 'Transport' | 'Donations' | 'Shopping' | 'Health' | 'Education' | 'Tech' | 'Subscriptions' | 'Insurance' | 'Other';
+export type ExpenseCategory = 'Bills' | 'Entertainment' | 'Food' | 'Transport' | 'Donations' | 'Shopping' | 'Health' | 'Education' | 'Tech' | 'Subscriptions' | 'Insurance' | 'Installments' | 'Other';
 
 // Sub-categories for each category
-export type SubscriptionSubCategory = 'bein' | 'Netflix' | 'YouTube' | 'Spotify' | 'Apple Music' | 'Disney+' | 'Amazon Prime' | 'Facebook' | 'Discord' | 'WatchIt' | 'Shahid' | 'Anghami' | 'OSN+' | 'Club Membership' | 'Other Subs';
+export type SubscriptionSubCategory = 'bein' | 'Netflix' | 'YouTube' | 'Spotify' | 'Apple Music' | 'Disney+' | 'Amazon Prime' | 'Facebook' | 'TikTok' | 'Instagram' | 'Twitter' | 'LinkedIn' | 'Snapchat' | 'Pinterest' | 'Microsoft' | 'Discord' | 'WatchIt' | 'Shahid' | 'Anghami' | 'OSN+' | 'Club Membership' | 'Other Subs';
 export type TransportSubCategory = 'Uber' | 'Careem' | 'InDrive' | 'Didi' | 'Taxi' | 'Motorcycle' | 'Bus' | 'Train' | 'Metro' | 'Flight' | 'Ship' | 'Other Transport';
 export type FoodSubCategory = 'Restaurant' | 'Cafe' | 'Groceries' | 'Snacks' | 'Delivery' | 'Bakery';
 export type EntertainmentSubCategory = 'Movie' | 'Theater' | 'Concert' | 'Gaming' | 'Sports' | 'Music' | 'Show';
 export type DonationsSubCategory = 'Charity' | 'NGO' | 'Gifts' | 'Hospital' | 'Mosque' | 'Church' | 'Other Donations';
 export type ShoppingSubCategory = 'Clothes' | 'Shoes' | 'Accessories' | 'Home' | 'Beauty';
-export type HealthSubCategory = 'Medication' | 'Doctor' | 'Dentist' | 'Gym' | 'Mental Health';
+export type HealthSubCategory = 'Medication' | 'Doctor' | 'Dentist' | 'Lab Tests' | 'Imaging & Scans' | 'Gym' | 'Mental Health';
 export type EducationSubCategory = 'Tuition' | 'Books' | 'Course' | 'Training';
 export type TechSubCategory = 'Software' | 'Hardware' | 'Gadgets' | 'Apps';
 export type BillsSubCategory = 'Vodafone' | 'Orange' | 'e&' | 'WE' | 'Electricity' | 'Water' | 'Gas' | 'Internet';
+export type InstallmentsSubCategory = 'Money Fellows' | 'ValU' | 'Halan' | 'Sympl' | 'Contact' | 'Souhoola' | 'Bank Installment' | 'Credit Card Installment' | 'Car Installment' | 'Appliance Installment' | 'Furniture Installment' | 'Other Installment';
 export type InsuranceSubCategory = 'Medical Insurance' | 'Car Insurance' | 'Life Insurance'  | 'Travel Insurance'  | 'Property Insurance'  | 'Mobile Insurance'  | 'Other Insurance';
 
 export type ExpenseSubCategory = 
@@ -126,6 +127,7 @@ export type ExpenseSubCategory =
   | EducationSubCategory 
   | TechSubCategory
   | BillsSubCategory
+  | InstallmentsSubCategory
   | InsuranceSubCategory;
 
 export interface Expense {
@@ -155,7 +157,7 @@ export interface ExpenseChartData {
   date: string; // For reference
 }
 
-export const EXPENSE_CATEGORIES: ExpenseCategory[] = ['Bills', 'Donations', 'Education', 'Entertainment', 'Food', 'Health', 'Insurance', 'Shopping', 'Subscriptions', 'Tech', 'Transport', 'Other'];
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = ['Bills', 'Donations', 'Education', 'Entertainment', 'Food', 'Health', 'Installments', 'Insurance', 'Shopping', 'Subscriptions', 'Tech', 'Transport', 'Other'];
 
 export const CATEGORY_ICONS: Record<ExpenseCategory, string> = {
   Bills: 'faFileInvoiceDollar',
@@ -164,6 +166,7 @@ export const CATEGORY_ICONS: Record<ExpenseCategory, string> = {
   Entertainment: 'faFilm',
   Food: 'faUtensils',
   Health: 'faHeartPulse',
+  Installments: 'faFileInvoice',
   Insurance: 'faShieldHalved',
   Shopping: 'faShoppingBag',
   Subscriptions: 'faReceipt',
@@ -179,6 +182,7 @@ export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
   Entertainment: '#FF9F43', // Orange
   Food: '#FF6B6B',          // Red
   Health: '#00B894',        // Green
+  Installments: '#6a9400',   // Dark Green
   Insurance: '#c94aff',     // Violet
   Shopping: '#E84393',      // Pink
   Subscriptions: '#FDCB6E', // Yellow
@@ -188,16 +192,17 @@ export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
 };
 
 export const SUBCATEGORIES: Record<ExpenseCategory, ExpenseSubCategory[]> = {
-  Subscriptions: ['bein', 'Netflix', 'YouTube', 'Spotify', 'Apple Music', 'Disney+', 'Amazon Prime', 'Shahid', 'WatchIt', 'Anghami', 'OSN+', 'Facebook', 'Discord', 'Club Membership', 'Other Subs'],
+  Subscriptions: ['bein', 'Netflix', 'YouTube', 'Spotify', 'Apple Music', 'Disney+', 'Amazon Prime', 'Shahid', 'WatchIt', 'Anghami', 'OSN+', 'Facebook', 'Twitter', 'TikTok', 'Instagram', 'LinkedIn', 'Snapchat', 'Pinterest', 'Microsoft', 'Discord', 'Club Membership', 'Other Subs'],
   Transport: ['Uber', 'Careem', 'InDrive', 'Didi', 'Taxi', 'Motorcycle', 'Bus', 'Train', 'Metro', 'Flight', 'Ship', 'Other Transport'],
   Food: ['Restaurant', 'Cafe', 'Groceries', 'Snacks', 'Delivery', 'Bakery'],
   Entertainment: ['Movie', 'Theater', 'Concert', 'Gaming', 'Sports', 'Music', 'Show'],
   Donations: ['Charity', 'NGO', 'Gifts', 'Hospital', 'Mosque', 'Church', 'Other Donations'],
   Shopping: ['Clothes', 'Shoes', 'Accessories', 'Home', 'Beauty'],
-  Health: ['Medication', 'Doctor', 'Dentist', 'Gym', 'Mental Health'],
+  Health: ['Medication', 'Doctor', 'Dentist', 'Lab Tests', 'Imaging & Scans', 'Gym', 'Mental Health'],
   Education: ['Tuition', 'Books', 'Course', 'Training'],
   Tech: ['Software', 'Hardware', 'Gadgets', 'Apps'],
   Bills: ['Vodafone', 'Orange', 'e&', 'WE', 'Electricity', 'Water', 'Gas', 'Internet'],
+  Installments: ['Money Fellows', 'ValU', 'Halan', 'Sympl', 'Contact', 'Souhoola', 'Bank Installment', 'Credit Card Installment', 'Car Installment', 'Appliance Installment', 'Furniture Installment', 'Other Installment'],
   Insurance: ['Medical Insurance', 'Car Insurance', 'Life Insurance', 'Travel Insurance', 'Property Insurance', 'Mobile Insurance', 'Other Insurance'],
   Other: [],
 };
