@@ -16,7 +16,7 @@ A premium fintech-style React Native app for tracking financial goals and saving
 ![GitHub repo size](https://img.shields.io/github/repo-size/Mohammed-3tef/Haweshly)
 ![GitHub Release](https://img.shields.io/github/v/release/Mohammed-3tef/Haweshly)
 ![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/Mohammed-3tef/Haweshly/latest/app-release.apk)
-
+ 
 ## Features
 
 - **Financial Goals Management** – Create, edit, delete goals with name, target amount, start date, and deadline
